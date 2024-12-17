@@ -4,6 +4,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- 用户持久层 -->
 <mapper namespace="cn.ccs.dao.UserDao">
-
+    <!-- 根据账号密码查询用户 -->
+    <select id="findUser" parameterType="cn.ccs.pojo.User" resultType="cn.ccs.pojo.User">
+        select * from user where username=#{username} and password=#{password}
+    </select>
+    <!-- 根据用户名查询用户空间大小 -->
+    <select id="getCountSize" parameterType="java.lang.String" resultType="java.lang.String">
+		select countSize from user where username = #{username}
+	</select>
 
 </mapper>
