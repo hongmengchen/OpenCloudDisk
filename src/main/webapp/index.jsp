@@ -13,10 +13,7 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath }/css/login.css" />
 <script type="text/javascript" src="${pageContext.request.contextPath }/js/jquery.min.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath }/js/login.js"></script>
-<title></title>
 </head>
-
-
 
 <body>
 	<div id="slider-title">
