@@ -40,4 +40,15 @@ public class UserServiceImpl implements UserService {
 		}
 		return countSize;
     }
+
+    public boolean addUser(User user) throws Exception{
+        User users=userDao.checkUser(user);
+        if(users==null) {
+            user.setPassword(UserUtils.MD5(user.getPassword()));
+            userDao.addUser(user);
+        } 	else {
+            return false;
+        }
+        return true;
+    }
 }
