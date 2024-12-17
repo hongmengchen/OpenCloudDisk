@@ -42,12 +42,7 @@
         <url-pattern>/css/*</url-pattern>
         <url-pattern>/js/*</url-pattern>
         <url-pattern>/img/*</url-pattern>
+        <url-pattern>/file/*</url-pattern>
     </servlet-mapping>
-
-    <!-- 忽略 Tomcat 默认的 jar 包扫描 -->
-    <!--<context-param>
-        <param-name>org.apache.tomcat.util.scan.StandardJarScanFilter.jarsToSkip</param-name>
-        <param-value>log4j*.jar,slf4j*.jar,commons-*.jar</param-value>
-    </context-param>-->
 
 </web-app>

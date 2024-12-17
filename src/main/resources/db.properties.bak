@@ -3,5 +3,4 @@ jdbc.url=jdbc:mysql://localhost:3306/yunpan?useUnicode=true&characterEncoding=ut
 jdbc.username=root
 jdbc.password=123456
 
-# 将密码改成自己的，然后将文件后缀的 .bak 删除
-111
+# ！！！注意！！！将密码改成自己的，然后将文件后缀的 .bak 删除
