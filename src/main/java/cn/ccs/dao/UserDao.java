@@ -10,4 +10,8 @@ public interface UserDao {
     User findUser(User user);
     // 根据用户名查询用户空间大小
     String getCountSize(String username);
+    //注册用户
+    void addUser(User user) throws Exception;
+    //检查用户名是否重复
+    User checkUser(User user) throws Exception;
 }
