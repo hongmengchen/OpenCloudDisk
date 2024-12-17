@@ -1,4 +1,4 @@
-package com.qst.yunpan.pojo;
+package cn.ccs.pojo;
 
 public class Office {
     private String officeId;
