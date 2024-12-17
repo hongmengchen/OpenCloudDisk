@@ -10,6 +10,7 @@
 <meta http-equiv="expires" content="0">
 <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
 <meta http-equiv="description" content="This is my page">
+<link rel="icon" href="${pageContext.request.contextPath }/img/logo.png" type="image/">
 <link rel="stylesheet" href="${pageContext.request.contextPath }/css/login.css" />
 <script type="text/javascript" src="${pageContext.request.contextPath }/js/jquery.min.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath }/js/login.js"></script>
