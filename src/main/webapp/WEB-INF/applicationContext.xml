@@ -27,7 +27,7 @@
                            http://cocoon.apache.org/schema/avalon http://cocoon.apache.org/schema/avalon/cocoon-avalon-1.0.xsd">
 
   <!-- Activate Cocoon Spring Configurator -->
-  <configurator:settings/>
+  <configurator:settings />
 
   <!-- Configure Log4j -->
   <bean name="org.apache.cocoon.spring.configurator.log4j"
