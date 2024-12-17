@@ -4,6 +4,14 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- 用户持久层 -->
 <mapper namespace="cn.ccs.dao.UserDao">
+    <!-- 添加用户 -->
+    <insert id="addUser" parameterType="cn.ccs.pojo.User">
+        insert into user(username, password) values(#{username}, #{password})
+    </insert>
+    <!-- 检查用户名是否重复 -->
+    <select id="checkUser" parameterType="cn.ccs.pojo.User" resultType="cn.ccs.pojo.User">
+        select * from user where username = #{username}
+    </select>
     <!-- 根据账号密码查询用户 -->
     <select id="findUser" parameterType="cn.ccs.pojo.User" resultType="cn.ccs.pojo.User">
         select * from user where username=#{username} and password=#{password}
