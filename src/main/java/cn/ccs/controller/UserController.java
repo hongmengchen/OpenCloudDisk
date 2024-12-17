@@ -1,6 +1,7 @@
 package cn.ccs.controller;
 
 import cn.ccs.pojo.User;
+import cn.ccs.service.impl.FileServiceImpl;
 import cn.ccs.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,8 @@ public class UserController {
     // 注入 UserService
     @Autowired
     private UserServiceImpl userService;
+    @Autowired
+    private FileServiceImpl fileService;
 
     // 登录
     @RequestMapping("/login")
@@ -36,4 +39,24 @@ public class UserController {
             return "login"; //   /WEB-INF/jsp/ login.jsp
         }
     }
+
+    //注册
+    @RequestMapping("/regist")
+    public String regist(HttpServletRequest request,HttpServletResponse response,User user) throws Exception{
+        System.out.println(user.getUsername()+"-------"+user.getPassword());
+        if(user.getUsername() == null || user.getPassword() == null||user.getUsername().equals("")||user.getPassword().equals("")){
+            request.setAttribute("msg", "请输入用户名和密码");
+            return "regist";
+        }else{
+            boolean isSuccess = userService.addUser(user);
+            if(isSuccess){
+                fileService.addNewNameSpace(request, user.getUsername());
+                return "login";
+            }else{
+                request.setAttribute("msg", "注册失败");
+                return "regist";
+            }
+        }
+    }
+
 }
