@@ -78,6 +78,7 @@
             <version>1.8.0</version>
         </dependency>
 
+        <!-- Servlet相关包 -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
@@ -91,19 +92,20 @@
             <scope>provided</scope>
         </dependency>
 
-
         <!-- MyBatis-Plus -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
             <version>3.5.9</version>
         </dependency>
+
         <!-- MySQL相关包 -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.20</version>
         </dependency>
+
         <!-- 数据库连接池 -->
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -135,18 +137,21 @@
             <version>2.4</version>
             <classifier>jdk15</classifier>
         </dependency>
+
         <!-- commons依赖 -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.7</version>
         </dependency>
+
         <!-- file upload part -->
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
             <version>1.4</version>
         </dependency>
+
         <!-- 日志相关包 -->
         <dependency>
             <groupId>log4j</groupId>
