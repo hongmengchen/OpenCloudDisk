@@ -19,122 +19,172 @@ import java.util.UUID;
  */
 
 public class FileUtils {
-	public static String getDataSize(long size) {
-		DecimalFormat formater = new DecimalFormat("####.0");
-		if (size < 1024) {
-			return size + "B";
-		} else if (size < 1024 * 1024) {
-			float kbsize = size / 1024f;
-			return formater.format(kbsize) + "KB";
-		} else if (size < 1024 * 1024 * 1024) {
-			float mbsize = size / 1024f / 1024f;
-			return formater.format(mbsize) + "MB";
-		} else if (size < 1024 * 1024 * 1024 * 1024) {
-			float gbsize = size / 1024f / 1024f / 1024f;
-			return formater.format(gbsize) + "GB";
-		} else {
-			return "-";
-		}
-	}
+    /**
+     * 获取文件大小
+     *
+     * @param size 文件大小（以字节为单位）
+     * @return 文件大小的字符串表示，例如 "1024B" 或 "1.5MB"
+     */
+    public static String getDataSize(long size) {
+        DecimalFormat formater = new DecimalFormat("####.0");
+        if (size < 1024) {
+            return size + "B";
+        } else if (size < 1024 * 1024) {
+            float kbsize = size / 1024f;
+            return formater.format(kbsize) + "KB";
+        } else if (size < 1024 * 1024 * 1024) {
+            float mbsize = size / 1024f / 1024f;
+            return formater.format(mbsize) + "MB";
+        } else if (size < 1024 * 1024 * 1024 * 1024) {
+            float gbsize = size / 1024f / 1024f / 1024f;
+            return formater.format(gbsize) + "GB";
+        } else {
+            return "-";
+        }
+    }
 
-	public static String formatTime(long time){
-		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(time));
-	}
+    /**
+     * 格式化时间戳
+     *
+     * @param time 时间戳（毫秒）
+     * @return 格式化后的时间字符串，例如 "yyyy-MM-dd HH:mm:ss"
+     */
+    public static String formatTime(long time) {
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(time));
+    }
 
-	public static String getUrl8(){
-		return UUID.randomUUID().toString().replace("-", "").substring(0, 8);
-	}
-	public final static Map<String, String> FILE_TYPE_MAP = new HashMap<String, String>();
-	static{
-		FILE_TYPE_MAP.put("jpg", "image");
-		FILE_TYPE_MAP.put("png", "image");
-		FILE_TYPE_MAP.put("gif", "image");
-		FILE_TYPE_MAP.put("tif", "image");
-		FILE_TYPE_MAP.put("bmp", "image");
-		FILE_TYPE_MAP.put("bmp", "image");
-		FILE_TYPE_MAP.put("bmp", "image");
+    /**
+     * 生成随机的8位字符串
+     *
+     * @return 随机生成的8位字符串
+     */
+    public static String getUrl8() {
+        return UUID.randomUUID().toString().replace("-", "").substring(0, 8);
+    }
 
-		FILE_TYPE_MAP.put("html", "docum");
-		FILE_TYPE_MAP.put("htm" , "docum"); //HTM (htm)
-		FILE_TYPE_MAP.put("css" , "docum"); //css
-		FILE_TYPE_MAP.put("js"  , "docum"); //js
-		FILE_TYPE_MAP.put("ini" , "docum");
-		FILE_TYPE_MAP.put("txt" , "docum");
-		FILE_TYPE_MAP.put("jsp" , "docum");
-		FILE_TYPE_MAP.put("sql" , "docum");
-		FILE_TYPE_MAP.put("xml" , "docum");
-		FILE_TYPE_MAP.put("java", "docum");
-		FILE_TYPE_MAP.put("bat" , "docum");
-		FILE_TYPE_MAP.put("mxp" , "docum");
-		FILE_TYPE_MAP.put("properties", "docum");
+    // 文件类型映射表
+    public final static Map<String, String> FILE_TYPE_MAP = new HashMap<String, String>();
 
-		FILE_TYPE_MAP.put("doc", "office");
-		FILE_TYPE_MAP.put("docx", "office");
-		FILE_TYPE_MAP.put("vsd", "office");
-		FILE_TYPE_MAP.put("mdb", "office");
-		FILE_TYPE_MAP.put("pdf", "office");
-		FILE_TYPE_MAP.put("xlsx", "office");
-		FILE_TYPE_MAP.put("xls", "office");
-		FILE_TYPE_MAP.put("pptx", "office");
-		FILE_TYPE_MAP.put("ppt", "office");
-		FILE_TYPE_MAP.put("wps", "office");
+    static {
+        // 图片类型
+        FILE_TYPE_MAP.put("jpg", "image");
+        FILE_TYPE_MAP.put("png", "image");
+        FILE_TYPE_MAP.put("gif", "image");
+        FILE_TYPE_MAP.put("tif", "image");
+        FILE_TYPE_MAP.put("bmp", "image");
+        FILE_TYPE_MAP.put("bmp", "image");
+        FILE_TYPE_MAP.put("bmp", "image");
 
-		FILE_TYPE_MAP.put("mov","vido");
-		FILE_TYPE_MAP.put("rmvb","vido");
-		FILE_TYPE_MAP.put("flv","vido");
-		FILE_TYPE_MAP.put("mp4","vido");
-		FILE_TYPE_MAP.put("avi","vido");
-		FILE_TYPE_MAP.put("wav","vido");
-		FILE_TYPE_MAP.put("wmv","vido");
-		FILE_TYPE_MAP.put("mpg","vido");
+        // 文档类型
+        FILE_TYPE_MAP.put("html", "docum");
+        FILE_TYPE_MAP.put("htm", "docum"); //HTM (htm)
+        FILE_TYPE_MAP.put("css", "docum"); //css
+        FILE_TYPE_MAP.put("js", "docum"); //js
+        FILE_TYPE_MAP.put("ini", "docum");
+        FILE_TYPE_MAP.put("txt", "docum");
+        FILE_TYPE_MAP.put("jsp", "docum");
+        FILE_TYPE_MAP.put("sql", "docum");
+        FILE_TYPE_MAP.put("xml", "docum");
+        FILE_TYPE_MAP.put("java", "docum");
+        FILE_TYPE_MAP.put("bat", "docum");
+        FILE_TYPE_MAP.put("mxp", "docum");
+        FILE_TYPE_MAP.put("properties", "docum");
 
-		FILE_TYPE_MAP.put("mp3","audio");
-		FILE_TYPE_MAP.put("mid","audio");
+        // 办公软件类型
+        FILE_TYPE_MAP.put("doc", "office");
+        FILE_TYPE_MAP.put("docx", "office");
+        FILE_TYPE_MAP.put("vsd", "office");
+        FILE_TYPE_MAP.put("mdb", "office");
+        FILE_TYPE_MAP.put("pdf", "office");
+        FILE_TYPE_MAP.put("xlsx", "office");
+        FILE_TYPE_MAP.put("xls", "office");
+        FILE_TYPE_MAP.put("pptx", "office");
+        FILE_TYPE_MAP.put("ppt", "office");
+        FILE_TYPE_MAP.put("wps", "office");
 
-		FILE_TYPE_MAP.put("zip", "comp");
-		FILE_TYPE_MAP.put("rar", "comp");
-		FILE_TYPE_MAP.put("gz" , "comp");
+        // 视频类型
+        FILE_TYPE_MAP.put("mov", "vido");
+        FILE_TYPE_MAP.put("rmvb", "vido");
+        FILE_TYPE_MAP.put("flv", "vido");
+        FILE_TYPE_MAP.put("mp4", "vido");
+        FILE_TYPE_MAP.put("avi", "vido");
+        FILE_TYPE_MAP.put("wav", "vido");
+        FILE_TYPE_MAP.put("wmv", "vido");
+        FILE_TYPE_MAP.put("mpg", "vido");
 
-	}
-	public static String getFileType(File file) {
-		if(file.isDirectory()){
-			return "folder-open";
-		}
-		String fileName = file.getPath();
-		String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
-		String fileType = FILE_TYPE_MAP.get(suffix);
-		return fileType == null ? "file" : fileType;
-	}
+        // 音频类型
+        FILE_TYPE_MAP.put("mp3", "audio");
+        FILE_TYPE_MAP.put("mid", "audio");
+
+        // 压缩文件类型
+        FILE_TYPE_MAP.put("zip", "comp");
+        FILE_TYPE_MAP.put("rar", "comp");
+        FILE_TYPE_MAP.put("gz", "comp");
+
+    }
+
+    /**
+     * 获取文件类型
+     *
+     * @param file 文件对象
+     * @return 文件类型的字符串表示，如果类型未知则返回 "file"
+     */
+    public static String getFileType(File file) {
+        if (file.isDirectory()) {
+            return "folder-open";
+        }
+        String fileName = file.getPath();
+        String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
+        String fileType = FILE_TYPE_MAP.get(suffix);
+        return fileType == null ? "file" : fileType;
+    }
+
+    // 百度文档客户端
     private static DocClient docClient = null;
-	public static DocClient getDocClient(){
-		if(docClient == null){
-			String ACCESS_KEY_ID = "87076e5056e94a9185cb849d09398abe";//在这里从百度https://console.bce.baidu.com/iam/#/iam/accesslist获取两个key
-		    String SECRET_ACCESS_KEY = "c3dc7b6481aa4e7eaf6b8b26c9caa19c";
 
-		    // 初始化一个DocClient
-		    String ENDPOINT = "http://doc.bj.baidubce.com";
-		 // 创建BceClientConfiguration实例
-		    BceClientConfiguration config = new BceClientConfiguration();
-		    // 配置认证秘钥和服务器信息
-		    config.setCredentials(new DefaultBceCredentials(ACCESS_KEY_ID,SECRET_ACCESS_KEY));
-		    config.setEndpoint(ENDPOINT);
+    /**
+     * 获取DocClient实例
+     *
+     * @return DocClient实例
+     */
+    public static DocClient getDocClient() {
+        if (docClient == null) {
+            // 从百度获取的认证密钥
+            String ACCESS_KEY_ID = "87076e5056e94a9185cb849d09398abe";//在这里从百度https://console.bce.baidu.com/iam/#/iam/accesslist获取两个key
+            String SECRET_ACCESS_KEY = "c3dc7b6481aa4e7eaf6b8b26c9caa19c";
 
-		    // 创建DOC客户端
-		    docClient = new DocClient(config);
-		}
-	    return docClient;
-	}
+            // 初始化一个DocClient
+            String ENDPOINT = "http://doc.bj.baidubce.com";
+            // 创建BceClientConfiguration实例
+            BceClientConfiguration config = new BceClientConfiguration();
+            // 配置认证秘钥和服务器信息
+            config.setCredentials(new DefaultBceCredentials(ACCESS_KEY_ID, SECRET_ACCESS_KEY));
+            config.setEndpoint(ENDPOINT);
 
-	public static String MD5(File file){
-		byte[] bys = null;
-		try {
-			bys = org.apache.commons.io.FileUtils.readFileToByteArray(file);
-			return DigestUtils.md5DigestAsHex(bys).toUpperCase();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+            // 创建DOC客户端
+            docClient = new DocClient(config);
+        }
+        return docClient;
+    }
+
+    /**
+     * 计算文件的MD5值
+     *
+     * @param file 文件对象
+     * @return 文件的MD5值（大写），如果计算失败则返回null
+     */
+    public static String MD5(File file) {
+        byte[] bys = null;
+        try {
+            // 读取文件内容到字节数组
+            bys = org.apache.commons.io.FileUtils.readFileToByteArray(file);
+            // 计算MD5值并返回
+            return DigestUtils.md5DigestAsHex(bys).toUpperCase();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 }
 
