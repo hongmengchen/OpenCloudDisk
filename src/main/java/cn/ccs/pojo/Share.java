@@ -2,18 +2,22 @@ package cn.ccs.pojo;
 
 import lombok.Data;
 
+/**
+ * 文件分享实体类
+ */
+
 @Data
 public class Share {
-    // 分享id
+    // 分享id，自增
     private Integer shareId;
-    // 分享链接
+    // 分享文件的对外地址
     private String shareUrl;
-    // 文件路径
+    // 被分享文件的路径
     private String path;
-    // 分享者
+    // 分享人
     private String shareUser;
-    //状态
+    // 状态（1-公开 2-加密）
     private Integer status;
-    // 命令
+    // 提取码
     private String command;
 }
