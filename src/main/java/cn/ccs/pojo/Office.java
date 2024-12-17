@@ -1,5 +1,6 @@
 package cn.ccs.pojo;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 /**
@@ -7,6 +8,7 @@ import lombok.Data;
  */
 
 @Data
+@TableName("office")
 public class Office {
     // 上传office文档的id
     private String officeId;

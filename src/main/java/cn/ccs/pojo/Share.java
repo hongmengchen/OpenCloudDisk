@@ -1,5 +1,6 @@
 package cn.ccs.pojo;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 /**
@@ -7,6 +8,7 @@ import lombok.Data;
  */
 
 @Data
+@TableName("share")
 public class Share {
     // 分享id，自增
     private Integer shareId;

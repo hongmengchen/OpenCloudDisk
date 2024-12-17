@@ -1,5 +1,6 @@
 package cn.ccs.pojo;
 
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 /**
@@ -7,6 +8,7 @@ import lombok.Data;
  */
 
 @Data
+@TableName("user")
 public class User {
     // 命名空间
     public static final String NAMESPACE = "username";
