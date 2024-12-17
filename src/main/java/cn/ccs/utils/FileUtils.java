@@ -14,6 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * 文件工具类
+ */
+
 public class FileUtils {
 	public static String getDataSize(long size) {
 		DecimalFormat formater = new DecimalFormat("####.0");

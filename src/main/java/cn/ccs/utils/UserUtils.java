@@ -5,6 +5,10 @@ import org.springframework.util.DigestUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * 用户工具类
+ */
+
 public class UserUtils {
     public static String MD5(String password){
         if(password!=null){
