@@ -9,9 +9,11 @@ import lombok.Data;
 @Data
 public class File {
     // 文件id，自增
-    private int fileId;
+    private Integer fileId;
+
     // 操作人
     private String userName;
+
     // 文件路径
     private String filePath;
 }
