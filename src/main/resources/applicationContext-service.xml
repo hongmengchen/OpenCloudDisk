@@ -11,15 +11,18 @@
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
 
+	<!-- 导入 MyBatis 数据源和映射文件配置 -->
+    <import resource="applicationContext-dao.xml"/>
+
 	<context:component-scan base-package="cn.ccs.service" />
 
 	<!-- 导入 applicationContext-dao.xml 文件 -->
-	<import resource="applicationContext-dao.xml" />
+<!--	<import resource="applicationContext-dao.xml" />-->
 
-	<bean id="transactionManager"
+	<!--<bean id="transactionManager"
 		  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
-	</bean>
+	</bean>-->
 	
-	<tx:annotation-driven transaction-manager="transactionManager" />
+	<tx:annotation-driven  />
 </beans>
