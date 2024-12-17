@@ -2,12 +2,16 @@ package cn.ccs.pojo;
 
 import lombok.Data;
 
+/**
+ * 文件实体类
+ */
+
 @Data
 public class File {
-    // 文件id
+    // 文件id，自增
     private int fileId;
-    // 文件名
+    // 操作人
     private String userName;
-    // 文件大小
+    // 文件路径
     private String filePath;
 }
