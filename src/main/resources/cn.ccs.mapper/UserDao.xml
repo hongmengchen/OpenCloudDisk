@@ -4,21 +4,41 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- 用户持久层 -->
 <mapper namespace="cn.ccs.dao.UserDao">
+
     <!-- 添加用户 -->
+    <!-- 参数：User对象，包含username和password字段 -->
+    <!-- 功能：将用户信息插入到user表中 -->
     <insert id="addUser" parameterType="cn.ccs.pojo.User">
-        insert into user(username, password) values(#{username}, #{password})
+        insert into user(username, password)
+        values (#{username}, #{password})
     </insert>
+
     <!-- 检查用户名是否重复 -->
+    <!-- 参数：User对象，包含username字段 -->
+    <!-- 返回值：User对象，如果用户名重复则返回用户信息，否则返回null -->
     <select id="checkUser" parameterType="cn.ccs.pojo.User" resultType="cn.ccs.pojo.User">
-        select * from user where username = #{username}
+        select *
+        from user
+        where username = #{username}
     </select>
+
     <!-- 根据账号密码查询用户 -->
+    <!-- 参数：User对象，包含username和password字段 -->
+    <!-- 返回值：User对象，如果账号密码匹配则返回用户信息，否则返回null -->
     <select id="findUser" parameterType="cn.ccs.pojo.User" resultType="cn.ccs.pojo.User">
-        select * from user where username=#{username} and password=#{password}
+        select *
+        from user
+        where username = #{username}
+          and password = #{password}
     </select>
-    <!-- 根据用户名查询用户空间大小 -->
+
+    <!-- 根据用户名查询用户已用空间大小 -->
+    <!-- 参数：String类型的username -->
+    <!-- 返回值：String类型的countSize，表示用户已用的空间大小 -->
     <select id="getCountSize" parameterType="java.lang.String" resultType="java.lang.String">
-		select countSize from user where username = #{username}
-	</select>
+        select countSize
+        from user
+        where username = #{username}
+    </select>
 
 </mapper>
