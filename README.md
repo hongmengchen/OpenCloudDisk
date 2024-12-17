@@ -23,4 +23,4 @@
 ## 补充
 
 - **Tomcat：** apache-tomcat-9.0.97
-- **JDK：** 17
+- **JDK：** 1.8

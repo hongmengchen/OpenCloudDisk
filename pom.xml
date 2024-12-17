@@ -196,11 +196,11 @@
             <artifactId>jstl-impl</artifactId>
             <version>1.2</version>
         </dependency>
-        <!--<dependency>
+        <dependency>
             <groupId>com.baidubce</groupId>
             <artifactId>bce-java-sdk</artifactId>
             <version>0.10.148</version>
-        </dependency>-->
+        </dependency>
 
         <!-- 单元测试相关包 -->
         <dependency>
