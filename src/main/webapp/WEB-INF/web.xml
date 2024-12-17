@@ -4,16 +4,18 @@
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
          version="4.0">
 
-  <display-name>Archetype Created Web Application</display-name>
+    <!-- 项目名称 -->
+    <display-name>Archetype Created Web Application</display-name>
 
-  <jsp-config>
+    <!-- 配置默认的 Servlet -->
+    <jsp-config>
         <jsp-property-group>
             <url-pattern>*.jsp</url-pattern>
             <el-ignored>false</el-ignored>
         </jsp-property-group>
     </jsp-config>
 
-  <!-- 配置 Spring MVC 的前端控制器 -->
+    <!-- 配置 Spring MVC 的前端控制器 -->
     <servlet>
         <servlet-name>DispatcherServlet</servlet-name>
         <servlet-class>
@@ -28,6 +30,7 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
 
+    <!-- 配置 Servlet 映射 -->
     <servlet-mapping>
         <servlet-name>DispatcherServlet</servlet-name>
         <url-pattern>/</url-pattern>
@@ -40,4 +43,11 @@
         <url-pattern>/js/*</url-pattern>
         <url-pattern>/img/*</url-pattern>
     </servlet-mapping>
+
+    <!-- 忽略 Tomcat 默认的 jar 包扫描 -->
+    <!--<context-param>
+        <param-name>org.apache.tomcat.util.scan.StandardJarScanFilter.jarsToSkip</param-name>
+        <param-value>log4j*.jar,slf4j*.jar,commons-*.jar</param-value>
+    </context-param>-->
+
 </web-app>
