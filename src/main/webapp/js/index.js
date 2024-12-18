@@ -154,11 +154,15 @@ function downloadFileSelect(obj) {
  * 单文件下载按钮下载
  */
 function downloadFile(obj) {
+    // 获取目标元素的前两个兄弟元素中的子元素（<a> 标签，代表文件）
     $file = $(obj).parent().prev().prev().children();
+    // 从 <a> 标签中读取 "path" 属性
     var path = $file.attr("path");
+    // 如果没有 "path" 属性，则将 <a> 标签的文本内容作为路径
     if (path == null) {
         path = $file.text();
     }
+    // 调用另一个函数 download(obj, params)，并将参数 "&downPath=" + 路径值传入
     return download(obj, "&downPath=" + encodeURI(path));
 }
 
@@ -166,9 +170,13 @@ function downloadFile(obj) {
  * 下载
  */
 function download(obj, path) {
+    // 初始化下载的基础 URL，指向后端的文件下载接口
     var url = "file/download.action?";
+    // 将当前路径 `currentPath` 作为参数添加到 URL 中，经过 `encodeURI` 编码处理
     url += ("currentPath=" + encodeURI(currentPath));
+    // 拼接额外的路径参数 `path`，假定 `path` 格式为 `&downPath=/some/file`
     url += path;
+    // 将生成的 URL 设置为触发事件的元素的 `href` 属性
     $(obj).attr("href", url);
     return true;
 }
