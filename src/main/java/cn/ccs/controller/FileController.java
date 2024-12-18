@@ -373,4 +373,11 @@ public class FileController {
             e.printStackTrace();
         }
     }
+
+    @RequestMapping("/openAudioPage")
+	public String openAudioPage(Model model, String currentPath, String fileName) {
+		model.addAttribute("currentPath", currentPath);
+		model.addAttribute("fileName", fileName);
+		return "audio";
+	}
 }

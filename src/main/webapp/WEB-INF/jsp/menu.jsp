@@ -20,10 +20,8 @@
             <li style="width: 100%; height: 38px;padding: 0px;margin: 0px;">
                 <a onclick="return searchFileType('image')"
                    style="display: inline-block;width: 179px;height: 38px;padding: 0px 0px 0px 15px;position: relative;vertical-align:middle;line-height:38px;text-decoration: none;">
-						<span
-                                style="width: 38px;height: 38px;display: inline-block;text-align: center;">
-							<span class="glyphicon glyphicon-file"
-                                  style="visibility: hidden;"></span>
+						<span style="width: 38px;height: 38px;display: inline-block;text-align: center;">
+							<span class="glyphicon glyphicon-file" style="visibility: hidden;"></span>
 					</span> <span
                         style="width:auto ;height: 38px;display: inline-block;text-align: left;vertical-align: middle;">图片</span>
                 </a>
