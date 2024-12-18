@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -348,6 +349,28 @@ public class FileController {
         } catch (Exception e) {
             // 如果清空回收站过程中发生异常，返回失败状态码和失败消息
             return new Result<>(322, false, "删除失败");
+        }
+    }
+
+    /**
+     * 开放文件访问接口
+     * 该方法旨在通过HTTP请求响应，提供文件下载或访问功能
+     *
+     * @param response    用于向客户端返回文件的HTTP响应对象
+     * @param currentPath 文件所在的当前路径，用于定位文件位置
+     * @param fileName    文件名，用于指定需要开放的文件
+     * @param fileType    文件类型，可能用于决定文件的处理方式或MIME类型
+     */
+    @RequestMapping("/openFile")
+    public void openFile(HttpServletResponse response, String currentPath,
+                         String fileName, String fileType) {
+        try {
+            // 调用服务层方法，处理文件响应逻辑
+            fileService.respFile(response, request, currentPath, fileName,
+                    fileType);
+        } catch (IOException e) {
+            // 捕获IO异常，通常表示文件读取或网络传输问题
+            e.printStackTrace();
         }
     }
 }
