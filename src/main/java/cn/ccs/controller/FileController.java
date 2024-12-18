@@ -21,16 +21,22 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * 文件管理控制器
+ */
+
 @Controller
 @RequestMapping("/file")
 public class FileController {
+    private final HttpServletRequest request;
+    private final FileService fileService;
 
-    // 注入request对象，用于获取请求相关的信息，比如会话、请求参数等
     @Autowired
-    private HttpServletRequest request;
-    // 注入文件服务层接口，通过它调用各种文件相关的业务逻辑方法
-    @Autowired
-    private FileService fileService;
+    public FileController(HttpServletRequest request,FileService fileService){
+        this.request = request;
+        this.fileService = fileService;
+    }
+
 
     /**
      * 获取文件列表的方法
@@ -180,7 +186,9 @@ public class FileController {
         String webrootpath = fileService.getFileName(request, "");
         int number = webrootpath.length();
         SummaryFile rootlist = fileService.summarylistFile(webrootpath, number);
+        // 将摘要列表添加到模型中
         model.addAttribute("rootlist", rootlist);
+
         return "summarylist";
     }
 
@@ -208,7 +216,14 @@ public class FileController {
         }
     }
 
-     // 重命名
+    /**
+     * 重命名目录的请求映射
+     *
+     * @param currentPath 当前路径
+     * @param srcName 源目录名
+     * @param destName 目标目录名
+     * @return
+     */
     @RequestMapping("/renameDirectory")
     public @ResponseBody Result<String> renameDirectory(String currentPath,    String srcName, String destName) {
         try {
@@ -218,6 +233,7 @@ public class FileController {
             return new Result<>(351, false, "重命名失败");
         }
     }
+
     /**
      * 移动目录控制器
      *

@@ -40,4 +40,29 @@ public class ShareController {
         }
         return "share";
     }
+
+    @RequestMapping("/searchShare")
+    public @ResponseBody Result<List<ShareFile>> searchShare(HttpServletRequest request, int status){
+        try {
+            List<ShareFile> files = shareService.findShareByName(request, status);
+            Result<List<ShareFile>> result = new Result<>(415, true, "获取成功");
+            result.setData(files);
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result<>(411, false, "获取失败");
+        }
+    }
+
+    @RequestMapping("/cancelShare")
+    public @ResponseBody Result<String> cancelShare(String url, String filePath, int status){
+        try {
+            String msg = shareService.cancelShare(url, filePath, status);
+            Result<String> result = new Result<String>(425, true, msg);
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result<String>(421, false, "删除失败");
+        }
+    }
 }

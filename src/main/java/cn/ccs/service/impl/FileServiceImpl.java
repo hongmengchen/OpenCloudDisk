@@ -3,9 +3,7 @@ package cn.ccs.service.impl;
 import cn.ccs.dao.UserDao;
 import cn.ccs.dao.FileDao;
 import cn.ccs.dao.OfficeDao;
-import cn.ccs.pojo.FileCustom;
-import cn.ccs.pojo.SummaryFile;
-import cn.ccs.pojo.User;
+import cn.ccs.pojo.*;
 import cn.ccs.service.FileService;
 import cn.ccs.utils.FileUtils;
 import cn.ccs.utils.UserUtils;
@@ -15,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
+import java.io.File;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
@@ -744,5 +743,4 @@ public class FileServiceImpl implements FileService {
         File descFile = new File(getFileName(request, currentPath), destName);
         return file.renameTo(descFile);//重命名
     }
-
 }
