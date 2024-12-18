@@ -1,10 +1,12 @@
 package cn.ccs.service;
 
 import cn.ccs.pojo.FileCustom;
+import cn.ccs.pojo.SummaryFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public interface FileService {
@@ -40,5 +42,11 @@ public interface FileService {
     String getSearchFileName(HttpServletRequest request, String fileName);
     //递归搜索文件
     void matchFile(HttpServletRequest request, List<FileCustom> list, File dirFile, String reg, String regType);
+    //获取概览文件
+    SummaryFile summarylistFile(String realPath, int number);
+    //复制目录
+    void copyDirectory(HttpServletRequest request,String currentPath,String[] directoryName, String targetdirectorypath) throws Exception;
+    //复制文件
+    void copyfile(File srcFile, File targetFile) throws IOException;
 }
 
