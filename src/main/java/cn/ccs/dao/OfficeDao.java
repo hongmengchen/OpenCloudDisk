@@ -7,6 +7,9 @@ import org.springframework.stereotype.Repository;
 
 @Mapper
 public interface OfficeDao {
+    // 添加文件
     void addOffice(@Param("officeId") String officeId, @Param("officeMd5") String officeMd5) throws Exception;
+
+    // 根据md5码获取officeId
     String getOfficeId(String officeMd5) throws Exception;
 }

@@ -28,20 +28,35 @@ import java.util.zip.ZipOutputStream;
 
 import static jdk.nashorn.internal.objects.NativeError.getFileName;
 
+/**
+ * 文件操作相关业务逻辑实现类
+ */
+
 @Service("FileService")
 public class FileServiceImpl implements FileService {
     // 文件相对前缀，用于构建文件在项目中的相对存储路径，指向项目内特定的文件存储目录
     public static final String PREFIX = "WEB-INF" + File.separator + "file" + File.separator;
     // 新用户注册默认文件夹数组，定义了新用户创建时默认会生成的文件夹名称列表，包含如视频、音乐等不同类型的文件夹以及回收站文件夹
     public static final String[] DEFAULT_DIRECTORY = {"vido", "music", "source", "image", User.RECYCLE};
-    @Autowired
-    private UserDao userDao;
 
-    @Autowired
-    private FileDao fileDao;
+    //依赖注入
+    private final UserDao userDao;
+    private final FileDao fileDao;
+    private final OfficeDao officeDao;
 
+    /**
+     * 构造方法，用于自动注入相关依赖对象
+     * @param userDao
+     * @param fileDao
+     * @param officeDao
+     */
     @Autowired
-    private OfficeDao officeDao;
+    public FileServiceImpl(UserDao userDao, FileDao fileDao, OfficeDao officeDao) {
+        this.userDao = userDao;
+        this.fileDao = fileDao;
+        this.officeDao = officeDao;
+    }
+
     /**
      * 为用户添加新的命名空间（文件夹）的方法
      * 先获取根路径，然后基于此创建指定的命名空间文件夹，并在该文件夹下创建一系列默认的子文件夹（如视频、音乐等）
@@ -54,6 +69,7 @@ public class FileServiceImpl implements FileService {
         String fileName = getRootPath(request);
         File file = new File(fileName, namespace);
         file.mkdir();
+        // 创建默认文件夹
         for (String newFileName : DEFAULT_DIRECTORY) {
             File newFile = new File(file, newFileName);
             newFile.mkdir();
@@ -109,6 +125,7 @@ public class FileServiceImpl implements FileService {
     @Override
     public String getRootPath(HttpServletRequest request) {
         String rootPath = request.getSession().getServletContext().getRealPath("/") + PREFIX;
+
         return rootPath;
     }
 
@@ -141,6 +158,7 @@ public class FileServiceImpl implements FileService {
                 }
             }
         }
+
         return lists;
     }
 
@@ -175,6 +193,7 @@ public class FileServiceImpl implements FileService {
             String fileName = file.getOriginalFilename();
             String filePath = getFileName(request, currentPath);
             File distFile = new File(filePath, fileName);
+            // 如果目标文件不存在，则将上传的文件转移到目标路径下
             if (!distFile.exists()) {
                 file.transferTo(distFile);
                 if ("office".equals(FileUtils.getFileType(distFile))) {
@@ -187,6 +206,7 @@ public class FileServiceImpl implements FileService {
                 }
             }
         }
+        // 更新用户空间大小
         reSize(request);
     }
 
@@ -229,9 +249,11 @@ public class FileServiceImpl implements FileService {
      */
     private String getFileExtension(String fileName) {
         int index = fileName.lastIndexOf('.');
+
         if (index > 0) {
             return fileName.substring(index + 1);
         }
+
         return "";
     }
 
@@ -499,6 +521,7 @@ public class FileServiceImpl implements FileService {
      * @return 返回构造的文件完整路径
      */
     public String getSearchFileName(HttpServletRequest request, String fileName) {
+        // 如果文件名是根目录，则返回空字符串
         if (fileName == null || fileName.equals("\\")) {
             System.out.println(1);
             fileName = "";
@@ -575,6 +598,7 @@ public class FileServiceImpl implements FileService {
             String srcname = srcName;
             String prefixname = "";
             String targetname = "";
+            // 如果目标目录中存在同名文件或文件夹，则在文件名前添加序号
             if (targetFile.exists()) {
                 String[] srcnamesplit = srcname.split("\\)");
                 if (srcnamesplit.length > 1) {
@@ -595,7 +619,7 @@ public class FileServiceImpl implements FileService {
                 }
                 targetFile = new File(targetFile.getParent(), targetname);
             }
-            /* 移动即先复制，再删除 */
+            // 移动即先复制，再删除
             copyfile(srcFile, targetFile);
             delFile(srcFile);
         }
@@ -762,10 +786,14 @@ public class FileServiceImpl implements FileService {
             String srcname = srcName;
             String prefixname = "";
             String targetname = "";
+
+            // 判断目标文件是否已存在
             if (targetFile.exists()) {
                 String[] srcnamesplit = srcname.split("\\)");
                 if (srcnamesplit.length > 1) {
+                    // 获取数字字符串
                     String intstring = srcnamesplit[0].substring(1);
+                    // 判断是否为数字
                     Pattern pattern = Pattern.compile("[0-9]*");
                     Matcher isNum = pattern.matcher(intstring);
                     if (isNum.matches()) {
@@ -782,7 +810,7 @@ public class FileServiceImpl implements FileService {
                 }
                 targetFile = new File(targetFile.getParent(), targetname);
             }
-            /* 复制 */
+            // 复制
             copyfile(srcFile, targetFile);
 
         }
@@ -798,7 +826,7 @@ public class FileServiceImpl implements FileService {
      */
     public void copyfile(File srcFile, File targetFile) throws IOException {
         if (!srcFile.isDirectory()) {
-            /* 如果是文件，直接复制 */
+            // 如果是文件，直接复制
             targetFile.createNewFile();
             FileInputStream src = (new FileInputStream(srcFile));
             FileOutputStream target = new FileOutputStream(targetFile);
@@ -808,7 +836,7 @@ public class FileServiceImpl implements FileService {
             src.close();
             target.close();
         } else {
-            /* 如果是文件夹，再遍历 */
+            // 如果是文件夹，再遍历
             File[] listFiles = srcFile.listFiles();
             targetFile.mkdir();
             for (File file : listFiles) {
@@ -818,7 +846,15 @@ public class FileServiceImpl implements FileService {
         }
     }
 
-    // 重命名
+    /**
+     * 重命名文件或文件夹
+     *
+     * @param request  HttpServletRequest对象，用于获取文件名
+     * @param currentPath 当前目录路径
+     * @param srcName  要重命名的文件或文件夹的名称
+     * @param destName 重命名后的文件或文件夹的名称
+     * @return 如果重命名成功，则返回true，否则返回false
+     */
     public boolean renameDirectory(HttpServletRequest request, String currentPath, String srcName, String destName) {
         //根据源文件名  获取  源地址
         File file = new File(getFileName(request, currentPath), srcName);

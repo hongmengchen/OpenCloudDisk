@@ -23,21 +23,28 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * 文件管理控制器
+ * 控制器类，用于文件管理
  */
 
 @Controller
 @RequestMapping("/file")
 public class FileController {
+    // 注入HttpServletRequest对象
     private final HttpServletRequest request;
+    // 注入文件服务层对象
     private final FileService fileService;
 
+    /**
+     * 构造函数，用于注入HttpServletRequest对象和文件服务层对象
+     *
+     * @param request
+     * @param fileService
+     */
     @Autowired
     public FileController(HttpServletRequest request,FileService fileService){
         this.request = request;
         this.fileService = fileService;
     }
-
 
     /**
      * 获取文件列表的方法
@@ -195,7 +202,7 @@ public class FileController {
 
     /**
      * 复制目录控制器
-     *
+     *<p>
      * 该方法通过接收当前目录路径、目录名称数组和目标目录路径作为参数，
      * 调用fileService的copyDirectory方法来实现目录的复制操作
      * 主要用于处理目录复制的请求
@@ -223,7 +230,6 @@ public class FileController {
      * @param currentPath 当前路径
      * @param srcName 源目录名
      * @param destName 目标目录名
-     * @return
      */
     @RequestMapping("/renameDirectory")
     public @ResponseBody Result<String> renameDirectory(String currentPath,    String srcName, String destName) {
@@ -237,7 +243,7 @@ public class FileController {
 
     /**
      * 移动目录控制器
-     *
+     *<p>
      * 该方法负责处理移动目录的请求，它接收当前路径、目录名称数组和目标路径作为参数，
      * 并调用FileService的moveDirectory方法来执行目录移动操作
      *
@@ -262,7 +268,7 @@ public class FileController {
      * 该方法负责从文件服务中获取已删除（回收站内）的文件信息，并将其设置到请求属性中，
      * 以便在页面上展示这些文件信息
      *
-     * @return 返回"recycle"字符串，通常代表一个逻辑视图名称，用于展示回收站文件的页面
+     * @return 返回"recycle"字符串，用于展示回收站文件的页面
      */
     @RequestMapping("/recycleFile")
     public String recycleFile() {
@@ -323,5 +329,4 @@ public class FileController {
             return new Result<>(322, false, "删除失败");
         }
     }
-
 }

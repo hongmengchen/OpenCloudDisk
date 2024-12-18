@@ -45,6 +45,7 @@
     <url-pattern>*.gif</url-pattern>
     <url-pattern>*.jpg</url-pattern>
     </servlet-mapping>
+
     <!-- 处理post乱码filter -->
     <filter>
         <filter-name>CharacterEncodingFilter</filter-name>

@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class IndexController {
-    // 用户服务实现类，用于执行用户相关的业务逻辑
+    // 注入UserService
     private final UserServiceImpl userService;
 
     /**

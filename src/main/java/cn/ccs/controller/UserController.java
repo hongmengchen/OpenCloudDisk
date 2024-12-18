@@ -18,11 +18,7 @@ import javax.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/user")
 public class UserController {
-    /**
-     * UserController类的私有成员变量
-     * userService用于处理用户相关的业务逻辑
-     * fileService用于处理文件相关的业务逻辑
-     */
+    // 依赖注入
     private final UserServiceImpl userService;
     private final FileServiceImpl fileService;
 

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 @Service("userService")
 public class UserServiceImpl implements UserService {
-
     // 用户数据访问对象，用于与数据库进行交互
     private final UserDao userDao;
 
@@ -49,6 +48,12 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * 根据用户名查找用户
+     *
+     * @param username 用户名
+     * @return 如果找到用户则返回用户对象，否则返回null
+     */
     @Override
     public User findUser(String username) {
         User user = null;
