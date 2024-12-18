@@ -1,8 +1,8 @@
 package cn.ccs.service.impl;
 
 import cn.ccs.dao.UserDao;
-import cn.ccs.dao.fileDao;
-import cn.ccs.dao.officeDao;
+import cn.ccs.dao.FileDao;
+import cn.ccs.dao.OfficeDao;
 import cn.ccs.pojo.FileCustom;
 import cn.ccs.pojo.User;
 import cn.ccs.service.FileService;
@@ -12,11 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +29,7 @@ public class FileServiceImpl implements FileService {
     public FileServiceImpl(UserDao userDao) {
         this.userDao = userDao;
     }
+
     @Autowired
     private UserDao userDao;
 
@@ -39,7 +37,7 @@ public class FileServiceImpl implements FileService {
      * 为用户添加新的命名空间（文件夹）的方法
      * 先获取根路径，然后基于此创建指定的命名空间文件夹，并在该文件夹下创建一系列默认的子文件夹（如视频、音乐等）
      *
-     * @param request  HttpServletRequest对象，用于获取项目相关的上下文信息，比如获取根路径时需要用到会话信息等
+     * @param request   HttpServletRequest对象，用于获取项目相关的上下文信息，比如获取根路径时需要用到会话信息等
      * @param namespace 要创建的命名空间（文件夹）名称
      */
     @Override
@@ -57,7 +55,7 @@ public class FileServiceImpl implements FileService {
      * 根据请求对象和文件名获取文件的真实路径
      * 如果传入的文件名是空（null或"\\"），则将文件名设置为空字符串，然后结合用户名（从请求中获取）构建出完整的真实文件路径并返回
      *
-     * @param request HttpServletRequest对象，用于获取当前用户相关信息（如用户名）
+     * @param request  HttpServletRequest对象，用于获取当前用户相关信息（如用户名）
      * @param fileName 原始文件名，可能是相对路径形式或者完整文件名
      * @return 返回构建好的文件真实路径字符串
      */
@@ -77,7 +75,7 @@ public class FileServiceImpl implements FileService {
      * 根据请求对象、文件名以及用户名获取文件的真实路径
      * 如果用户名是空，则调用另一个重载的getFileName方法，仅根据请求和文件名获取路径；如果文件名是空，则将其设置为空字符串，然后构建并返回文件真实路径
      *
-     * @param request HttpServletRequest对象，用于获取相关上下文信息
+     * @param request  HttpServletRequest对象，用于获取相关上下文信息
      * @param fileName 原始文件名，可能是相对路径形式或者完整文件名
      * @param username 用户名，明确指定所属用户
      * @return 返回构建好的文件真实路径字符串
@@ -117,7 +115,7 @@ public class FileServiceImpl implements FileService {
     public List<FileCustom> listFile(String realPath) {
         File[] files = new File(realPath).listFiles();
         List<FileCustom> lists = new ArrayList<FileCustom>();
-        if (files!= null) {
+        if (files != null) {
             for (File file : files) {
                 if (!file.getName().equals(User.RECYCLE)) {
                     FileCustom custom = new FileCustom();
@@ -141,8 +139,8 @@ public class FileServiceImpl implements FileService {
      * 添加文件夹的方法
      * 根据请求对象、当前路径以及要添加的文件夹名称，构建出文件夹对应的File对象，然后调用mkdir方法创建该文件夹，返回创建结果（是否成功创建）
      *
-     * @param request HttpServletRequest对象，用于获取相关上下文信息（比如获取完整路径时可能用到用户名等）
-     * @param currentPath 当前所在的文件路径，作为新文件夹的父级路径
+     * @param request       HttpServletRequest对象，用于获取相关上下文信息（比如获取完整路径时可能用到用户名等）
+     * @param currentPath   当前所在的文件路径，作为新文件夹的父级路径
      * @param directoryName 要添加的文件夹名称
      * @return 返回布尔值，表示文件夹是否创建成功
      */
@@ -158,8 +156,8 @@ public class FileServiceImpl implements FileService {
      * 对于办公类型（通过文件工具类判断）的文件，还会尝试提取后缀名，创建文档并将相关信息保存到officeDao中（具体操作可能依赖相关业务逻辑）；
      * 最后调用reSize方法更新用户空间大小（以反映文件上传后的空间变化情况）
      *
-     * @param request HttpServletRequest对象，用于获取相关上下文信息（比如获取完整路径等）
-     * @param files 要上传的文件数组，包含多个MultipartFile类型的文件对象
+     * @param request     HttpServletRequest对象，用于获取相关上下文信息（比如获取完整路径等）
+     * @param files       要上传的文件数组，包含多个MultipartFile类型的文件对象
      * @param currentPath 当前所在的文件路径，作为文件上传的目标路径基础
      * @throws Exception 如果文件上传过程中出现任何问题（如文件转移失败、文档创建失败等），则抛出异常
      */
@@ -174,7 +172,7 @@ public class FileServiceImpl implements FileService {
                     try {
                         String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
                         String documentId = FileUtils.getDocClient().createDocument(distFile, fileName, suffix).getDocumentId();
-                        officeDao.addOffice(documentId, FileUtils.MD5(distFile));
+                        OfficeDao.addOffice(documentId, FileUtils.MD5(distFile));
                     } catch (Exception e) {
                     }
                 }
@@ -230,11 +228,13 @@ public class FileServiceImpl implements FileService {
 
     /**
      * 删除文件夹的方法
-     * 遍历要删除的文件夹名称数组，对每个文件夹：先拼接出其源文件的相对地址，再获取对应的绝对路径，将源文件移动到回收站目录（通过commons.jar包中的方法实现）；
-     * 同时将删除信息保存到fileDao中（具体保存内容和逻辑依赖业务需求）；最后调用reSize方法重新计算并更新用户空间大小（以反映文件删除后的空间变化情况）
+     * 遍历要删除的文件夹名称数组，对每个文件夹：先拼接出其源文件的相对地址，再获取对应的绝对路径，
+     * 将源文件移动到回收站目录（通过 commons.jar 包中的方法实现）；
+     * 同时将删除信息保存到 fileDao 中（具体保存内容和逻辑依赖业务需求）；
+     * 最后调用 reSize 方法重新计算并更新用户空间大小（以反映文件删除后的空间变化情况）。
      *
-     * @param request HttpServletRequest对象，用于获取相关上下文信息（比如获取完整路径、用户名等）
-     * @param currentPath 当前所在的文件路径，作为要删除文件夹的相对父级路径
+     * @param request       HttpServletRequest 对象，用于获取相关上下文信息（比如获取完整路径、用户名等）
+     * @param currentPath   当前所在的文件路径，作为要删除文件夹的相对父级路径
      * @param directoryName 要删除的文件夹名称数组，包含多个要删除的文件夹名称
      * @throws Exception 如果在文件移动、删除信息保存等过程中出现任何问题，则抛出异常
      */
@@ -242,13 +242,44 @@ public class FileServiceImpl implements FileService {
         for (String fileName : directoryName) {
             // 拼接源文件的地址
             String srcPath = currentPath + File.separator + fileName;
-            // 根据源文件相对地址拼接 绝对路径
-            File src = new File(getFileName(request, srcPath));// 即将删除的文件地址
-            File dest = new File(getRecyclePath(request));// 回收站目录地址
-            // 调用commons.jar包中的moveToDirectory移动文件，移至回收站目录
-            org.apache.commons.io.FileUtils.moveToDirectory(src, dest, true);
+            // 根据源文件相对地址拼接绝对路径
+            File src = new File(getFileName(request, srcPath)); // 即将删除的文件地址
+            File destDir = new File(getRecyclePath(request));  // 回收站目录地址
+
+            // 确保目标目录存在
+            if (!destDir.exists()) {
+                destDir.mkdirs();
+            }
+
+            // 构建目标文件路径
+            File dest = new File(destDir, src.getName());
+
+            // 如果目标文件存在，则重命名目标文件
+            if (dest.exists()) {
+                String baseName = src.getName();
+                String extension = "";
+                int dotIndex = baseName.lastIndexOf('.');
+                if (dotIndex != -1) {
+                    extension = baseName.substring(dotIndex); // 提取扩展名（包括点）
+                    baseName = baseName.substring(0, dotIndex); // 提取文件名部分
+                }
+                int duplicateCounter = 1;
+                String newFileName = baseName + "(" + duplicateCounter + ")" + extension;
+
+                // 循环生成唯一的文件名
+                dest = new File(destDir, newFileName);
+                while (dest.exists()) {
+                    duplicateCounter++;
+                    newFileName = baseName + "(" + duplicateCounter + ")" + extension;
+                    dest = new File(destDir, newFileName);
+                }
+            }
+
+            // 移动文件到目标文件路径
+            org.apache.commons.io.FileUtils.moveFile(src, dest);
+
             // 保存本条删除信息
-            fileDao.insertFiles(srcPath, UserUtils.getUsername(request));
+            FileDao.insertFiles(srcPath, UserUtils.getUsername(request));
         }
         // 重新计算文件大小
         reSize(request);
@@ -270,10 +301,10 @@ public class FileServiceImpl implements FileService {
      * 先对当前路径进行空值判断处理，如果传入的文件名数组长度为1（即只下载单个文件），则根据请求对象、当前路径以及用户名构建出该文件的绝对路径，
      * 若该路径对应的是一个文件，则返回该文件对象（可用于后续下载操作）；如果文件名数组长度不为1，则目前代码未完整实现打包下载逻辑（部分代码被注释掉了）
      *
-     * @param request HttpServletRequest对象，用于获取相关上下文信息（比如获取完整路径等）
+     * @param request     HttpServletRequest对象，用于获取相关上下文信息（比如获取完整路径等）
      * @param currentPath 当前所在的文件路径，可能影响文件下载的具体路径构建
-     * @param fileNames 要下载的文件名数组，包含多个文件名（可能用于批量下载或打包下载情况）
-     * @param username 用户名，可能用于确定用户专属的文件路径等情况
+     * @param fileNames   要下载的文件名数组，包含多个文件名（可能用于批量下载或打包下载情况）
+     * @param username    用户名，可能用于确定用户专属的文件路径等情况
      * @return 返回要下载的文件对象，如果不符合下载条件（如文件名数组长度不为1且未完整实现打包逻辑等）则返回null
      */
     @Override
