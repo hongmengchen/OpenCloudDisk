@@ -41,7 +41,7 @@ public class FileController {
      * @param fileService
      */
     @Autowired
-    public FileController(HttpServletRequest request,FileService fileService){
+    public FileController(HttpServletRequest request, FileService fileService) {
         this.request = request;
         this.fileService = fileService;
     }
@@ -69,8 +69,8 @@ public class FileController {
     /**
      * 添加文件夹的方法
      *
-     * @param currentPath    当前所在的文件路径，用于确定添加文件夹的父级路径
-     * @param directoryName  要添加的文件夹名称
+     * @param currentPath   当前所在的文件路径，用于确定添加文件夹的父级路径
+     * @param directoryName 要添加的文件夹名称
      * @return 返回一个Result对象，根据操作是否成功封装不同的状态码、操作结果标识以及提示信息，成功则返回状态码336、操作成功标识true以及"添加成功"提示信息，失败则返回相应的失败状态码、操作失败标识false以及"添加失败"提示信息
      */
     @RequestMapping("/addDirectory")
@@ -87,7 +87,7 @@ public class FileController {
     /**
      * 文件上传的方法
      *
-     * @param files      要上传的文件数组，通过@RequestParam注解指定参数名"files"来接收前端传递过来的多个文件
+     * @param files       要上传的文件数组，通过@RequestParam注解指定参数名"files"来接收前端传递过来的多个文件
      * @param currentPath 当前所在的文件路径，用于确定文件上传的目标路径
      * @return 返回一个Result对象，若文件上传过程中出现异常则返回状态码301、操作失败标识false以及"上传失败"提示信息，若上传成功则返回状态码305、操作成功标识true以及"上传成功"提示信息
      */
@@ -109,7 +109,7 @@ public class FileController {
      * @param currentPath 当前路径，用于确定文件所在的目录路径
      * @param downPath    文件名（此处可能是文件名数组，根据实际需求来定，代码中是数组形式传入），用于指定要下载的具体文件
      * @param username    用户名，可能用于权限验证或者确定用户专属的文件路径等情况
-     * @return 返回一个ResponseEntity<byte[]>对象，其中封装了文件的字节流数据以及相关的文件头信息，用于实现文件下载功能，如果出现异常则返回null
+     * @return 返回一个ResponseEntity<byte [ ]>对象，其中封装了文件的字节流数据以及相关的文件头信息，用于实现文件下载功能，如果出现异常则返回null
      */
     @RequestMapping("/download")
     public ResponseEntity<byte[]> download(String currentPath, String[] downPath, String username) {
@@ -140,8 +140,8 @@ public class FileController {
     /**
      * 删除文件夹的方法
      *
-     * @param currentPath    当前所在的文件路径，用于确定要删除文件夹的位置
-     * @param directoryName  要删除的文件夹名称数组，用于指定多个要删除的文件夹
+     * @param currentPath   当前所在的文件路径，用于确定要删除文件夹的位置
+     * @param directoryName 要删除的文件夹名称数组，用于指定多个要删除的文件夹
      * @return 返回一个Result对象，若删除操作成功则返回状态码346、操作成功标识true以及"删除成功"提示信息，若操作过程中出现异常则返回状态码341、操作失败标识false以及"删除失败"提示信息
      */
     @RequestMapping("/delDirectory")
@@ -202,19 +202,19 @@ public class FileController {
 
     /**
      * 复制目录控制器
-     *<p>
+     * <p>
      * 该方法通过接收当前目录路径、目录名称数组和目标目录路径作为参数，
      * 调用fileService的copyDirectory方法来实现目录的复制操作
      * 主要用于处理目录复制的请求
      *
-     * @param currentPath 当前目录路径，表示需要复制的目录所在的位置
-     * @param directoryName 目录名称数组，表示需要复制的一个或多个目录的名称
+     * @param currentPath         当前目录路径，表示需要复制的目录所在的位置
+     * @param directoryName       目录名称数组，表示需要复制的一个或多个目录的名称
      * @param targetdirectorypath 目标目录路径，表示目录将被复制到的位置
      * @return 返回一个Result对象，包含复制操作的结果信息，包括状态码、是否成功和提示信息
      * @throws Exception 如果复制过程中发生IO异常，将被捕获并处理
      */
     @RequestMapping("/copyDirectory")
-    public @ResponseBody Result<String> copyDirectory(String currentPath,String[] directoryName, String targetdirectorypath) throws Exception {
+    public @ResponseBody Result<String> copyDirectory(String currentPath, String[] directoryName, String targetdirectorypath) throws Exception {
         try {
             fileService.copyDirectory(request, currentPath, directoryName,
                     targetdirectorypath);
@@ -228,11 +228,11 @@ public class FileController {
      * 重命名目录的请求映射
      *
      * @param currentPath 当前路径
-     * @param srcName 源目录名
-     * @param destName 目标目录名
+     * @param srcName     源目录名
+     * @param destName    目标目录名
      */
     @RequestMapping("/renameDirectory")
-    public @ResponseBody Result<String> renameDirectory(String currentPath,    String srcName, String destName) {
+    public @ResponseBody Result<String> renameDirectory(String currentPath, String srcName, String destName) {
         try {
             fileService.renameDirectory(request, currentPath, srcName, destName);
             return new Result<>(356, true, "重命名成功");
@@ -243,19 +243,19 @@ public class FileController {
 
     /**
      * 移动目录控制器
-     *<p>
+     * <p>
      * 该方法负责处理移动目录的请求，它接收当前路径、目录名称数组和目标路径作为参数，
      * 并调用FileService的moveDirectory方法来执行目录移动操作
      *
-     * @param currentPath 当前路径，表示需要移动的目录所在的位置
-     * @param directoryName 目录名称数组，表示需要移动的一个或多个目录的名称
+     * @param currentPath         当前路径，表示需要移动的目录所在的位置
+     * @param directoryName       目录名称数组，表示需要移动的一个或多个目录的名称
      * @param targetdirectorypath 目标路径，表示目录移动的目的地
      * @return 返回一个Result对象，包含移动操作的结果信息，包括状态码、是否成功和提示信息
      */
     @RequestMapping("/moveDirectory")
-    public @ResponseBody Result<String> moveDirectory(String currentPath,String[] directoryName, String targetdirectorypath) {
+    public @ResponseBody Result<String> moveDirectory(String currentPath, String[] directoryName, String targetdirectorypath) {
         try {
-            fileService.moveDirectory(request, currentPath, directoryName,targetdirectorypath);
+            fileService.moveDirectory(request, currentPath, directoryName, targetdirectorypath);
             return new Result<>(366, true, "移动成功");
         } catch (Exception e) {
             return new Result<>(361, true, "移动失败");
@@ -306,6 +306,27 @@ public class FileController {
         } catch (Exception e) {
             // 如果还原过程中发生异常，返回失败状态码和失败消息
             return new Result<>(322, false, "还原失败");
+        }
+    }
+
+    /**
+     * 处理回收站中文件的删除请求
+     * 该方法接收一个文件ID数组，尝试从回收站中彻底删除这些文件
+     *
+     * @param fileId 包含待删除文件ID的数组
+     * @return 返回一个Result对象，包含删除操作的结果信息
+     */
+    @RequestMapping("/delRecycle")
+    public @ResponseBody Result<String> delRecycleDirectory(int fileId[]) {
+        try {
+            // 调用FileService中的delRecycle方法执行删除操作
+            fileService.delRecycle(request, fileId);
+            // 如果删除成功，返回一个包含成功信息的Result对象
+            return new Result<>(327, true, "删除成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 如果删除失败，打印异常信息并返回一个包含失败信息的Result对象
+            return new Result<>(322, false, "删除失败");
         }
     }
 
