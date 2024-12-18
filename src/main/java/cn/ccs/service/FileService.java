@@ -87,6 +87,9 @@ public interface FileService {
     // 还原的文件
     void revertDirectory(HttpServletRequest request, int[] fileId) throws Exception;
 
+    // 删除回收站文件
+    void delRecycle(HttpServletRequest request, int[] fileId) throws Exception;
+
     // 清空回收站文件
     void delAllRecycle(HttpServletRequest request) throws Exception;
 }
