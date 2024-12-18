@@ -515,7 +515,7 @@ public class FileServiceImpl implements FileService {
      * @param reg     文件名中包含的关键字
      * @param regType 文件类型，如"txt"、"jpg"等
      */
-    public void matchFile(HttpServletRequest request, List<FileCustom> list, File dirFile, String reg, String regType) {
+    private void matchFile(HttpServletRequest request, List<FileCustom> list, File dirFile, String reg, String regType) {
         // 获取当前目录下的所有文件和子目录
         File[] listFiles = dirFile.listFiles();
         // 如果当前目录不为空，则遍历每个文件或子目录

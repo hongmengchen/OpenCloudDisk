@@ -54,5 +54,6 @@ public interface FileService {
     void moveDirectory(HttpServletRequest request, String currentPath, String[] directoryName,String targetdirectorypath) throws Exception;
     //删除文件
     void delFile(File srcFile) throws Exception;
+
 }
 
