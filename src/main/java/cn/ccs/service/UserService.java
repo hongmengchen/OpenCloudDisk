@@ -15,6 +15,7 @@ public interface UserService {
      */
     User findUser(User user);
 
+    User findUser(String username);
     /**
      * 获取当前用户所用空间
      *
@@ -22,4 +23,6 @@ public interface UserService {
      * @return 返回用户的使用空间大小
      */
     String getCountSize(String username);
+
+    boolean addUser(User user) throws Exception;
 }

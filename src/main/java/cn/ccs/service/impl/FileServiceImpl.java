@@ -6,7 +6,6 @@ import cn.ccs.pojo.User;
 import cn.ccs.service.FileService;
 import cn.ccs.utils.FileUtils;
 import cn.ccs.utils.UserUtils;
-import org.apache.hadoop.mapred.IFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +18,7 @@ public class FileServiceImpl implements FileService {
     // 文件相对前缀
     public static final String PREFIX = "WEB-INF" + File.separator + "file" + File.separator;
     // 新用户注册默认文件夹
-    public static final String[] DEFAULT_DIRECTORY = { "vido", "music", "source", "image", User.RECYCLE };
+    public static final String[] DEFAULT_DIRECTORY = {"vido", "music", "source", "image", User.RECYCLE};
 
     @Autowired
     private UserDao userDao;
@@ -35,26 +34,19 @@ public class FileServiceImpl implements FileService {
         }
     }
 
-    @Override
-    public String getRootPath(HttpServletRequest request) {
-        String rootPath = request.getSession().getServletContext().getRealPath("/") + PREFIX;
-        return rootPath;
-    }
-
-    @Override
     public String getFileName(HttpServletRequest request, String fileName) {
-        fileName= fileName.replace("\\", "//");
-        if (fileName == null||fileName.equals("\\")) {
+        // fileName= fileName.replace("\\", "//");
+        if (fileName == null || fileName.equals("\\")) {
             System.out.println(1);
             fileName = "";
         }
         String username = UserUtils.getUsername(request);
-        String realpath=getRootPath(request) + username + File.separator + fileName;
+        String realpath = getRootPath(request) + username + File.separator + fileName;
         return realpath;
+
     }
 
-    @Override
-    public String getFileName(HttpServletRequest request,String username, String fileName) {
+    public String getFileName(HttpServletRequest request, String fileName, String username) {
         if (username == null) {
             return getFileName(request, fileName);
         }
@@ -65,26 +57,39 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public List<FileCustom> listFile(String path) {
-        File[] file = new File(path).listFiles();
+    //getRoonPath方法最终返回的是文件：http://locolhost:8080/cn/WEB-INF/file
+    public String getRootPath(HttpServletRequest request) {
+        String rootPath = request.getSession().getServletContext().getRealPath("/") + PREFIX;
+        return rootPath;
+    }
+
+    //获取路径下所有的文件信息
+    public List<FileCustom> listFile(String realPath) {
+        File[] files = new File(realPath).listFiles();
         List<FileCustom> lists = new ArrayList<FileCustom>();
-        if (file != null) {
-            for (File f : file) {
-                if (!f.getName().equals(User.RECYCLE)) {
-                    FileCustom fileCustom = new FileCustom();
-                    fileCustom.setFileName(f.getName());
-                    fileCustom.setLastTime(FileUtils.formatTime(f.lastModified()));
-                    fileCustom.setCurrentPath(path);
-                    if (f.isDirectory()) {
-                        fileCustom.setFileSize("~");
+        if (files != null) {
+            for (File file : files) {
+                if (!file.getName().equals(User.RECYCLE)) {
+                    FileCustom custom = new FileCustom();
+                    custom.setFileName(file.getName());
+                    custom.setLastTime(FileUtils.formatTime(file.lastModified()));
+                    custom.setCurrentPath(realPath);
+                    if (file.isDirectory()) {
+                        custom.setFileSize("-");
                     } else {
-                        fileCustom.setFileSize(FileUtils.getDataSize(f.length()));
+                        custom.setFileSize(FileUtils.getDataSize(file.length()));
                     }
-                    fileCustom.setFileType(FileUtils.getFileType(f));
-                    lists.add(fileCustom);
+                    custom.setFileType(FileUtils.getFileType(file));
+                    lists.add(custom);
                 }
             }
         }
         return lists;
+
     }
 }
+
+
+
+
+

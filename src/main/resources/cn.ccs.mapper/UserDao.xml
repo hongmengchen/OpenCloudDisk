@@ -32,6 +32,10 @@
           and password = #{password}
     </select>
 
+    <select id="findUserByUserName" parameterType="java.lang.String" resultType="cn.ccs.pojo.User">
+		select * from user where username = #{username}
+	</select>
+
     <!-- 根据用户名查询用户已用空间大小 -->
     <!-- 参数：String类型的username -->
     <!-- 返回值：String类型的countSize，表示用户已用的空间大小 -->
