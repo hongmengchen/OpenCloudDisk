@@ -2,6 +2,7 @@ package cn.ccs.controller;
 
 import cn.ccs.pojo.FileCustom;
 import cn.ccs.pojo.Result;
+import cn.ccs.pojo.SummaryFile;
 import cn.ccs.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -16,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -159,4 +162,42 @@ public class FileController {
         }
     }
 
+    /**
+     * 处理summarylist请求，展示摘要列表页面
+     *
+     * @param model Model对象，用于添加模型属性
+     * @return 返回摘要列表页面的视图名称
+     */
+    @RequestMapping("/summarylist")
+    public String summarylist(Model model) {
+        String webrootpath = fileService.getFileName(request, "");
+        int number = webrootpath.length();
+        SummaryFile rootlist = fileService.summarylistFile(webrootpath, number);
+        model.addAttribute("rootlist", rootlist);
+        return "summarylist";
+    }
+
+    /**
+     * 复制目录控制器
+     *
+     * 该方法通过接收当前目录路径、目录名称数组和目标目录路径作为参数，
+     * 调用fileService的copyDirectory方法来实现目录的复制操作
+     * 主要用于处理目录复制的请求
+     *
+     * @param currentPath 当前目录路径，表示需要复制的目录所在的位置
+     * @param directoryName 目录名称数组，表示需要复制的一个或多个目录的名称
+     * @param targetdirectorypath 目标目录路径，表示目录将被复制到的位置
+     * @return 返回一个Result对象，包含复制操作的结果信息，包括状态码、是否成功和提示信息
+     * @throws Exception 如果复制过程中发生IO异常，将被捕获并处理
+     */
+    @RequestMapping("/copyDirectory")
+    public @ResponseBody Result<String> copyDirectory(String currentPath,String[] directoryName, String targetdirectorypath) throws Exception {
+        try {
+            fileService.copyDirectory(request, currentPath, directoryName,
+                    targetdirectorypath);
+            return new Result<>(366, true, "复制成功");
+        } catch (IOException e) {
+            return new Result<>(361, true, "复制失败");
+        }
+    }
 }
