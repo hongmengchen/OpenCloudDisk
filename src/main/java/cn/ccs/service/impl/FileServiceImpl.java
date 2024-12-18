@@ -10,11 +10,13 @@ import cn.ccs.pojo.User;
 import cn.ccs.service.FileService;
 import cn.ccs.utils.FileUtils;
 import cn.ccs.utils.UserUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.io.File;
 import java.nio.channels.FileChannel;
@@ -757,6 +759,37 @@ public class FileServiceImpl implements FileService {
         // 根据用户进行删除
         fileDao.deleteFiles(UserUtils.getUsername(request));
         reSize(request);
+    }
+
+    /**
+     * 响应文件下载请求
+     * <p>
+     * 该方法用于处理文件下载请求，根据提供的路径和文件名定位文件，并将其内容返回给客户端
+     * 它支持两种类型的文件响应：文档类型（如文本文件）和其他类型（如图片、视频等）
+     *
+     * @param response    HTTP响应对象，用于向客户端发送文件数据
+     * @param request     HTTP请求对象，用于获取请求相关的信息
+     * @param currentPath 文件所在的目录路径
+     * @param fileName    要下载的文件名
+     * @param type        文件类型标识，用于决定使用何种方式发送文件内容
+     * @throws IOException 如果文件读写过程中发生错误
+     */
+    @Override
+    public void respFile(HttpServletResponse response, HttpServletRequest request, String currentPath, String fileName, String type) throws IOException {
+        // 根据提供的路径和文件名创建File对象
+        File file = new File(getFileName(request, currentPath), fileName);
+        // 创建文件输入流，用于读取文件内容
+        InputStream inputStream = new FileInputStream(file);
+        // 根据文件类型标识决定如何发送文件内容
+        if ("docum".equals(type)) {
+            // 对于文档类型文件，设置响应的字符编码为UTF-8，以确保文本文件的正确显示
+            response.setCharacterEncoding("UTF-8");
+            // 将文件内容复制到响应的Writer中，使用UTF-8编码
+            IOUtils.copy(inputStream, response.getWriter(), "UTF-8");
+        } else {
+            // 对于其他类型文件，直接将文件内容复制到响应的OutputStream中
+            IOUtils.copy(inputStream, response.getOutputStream());
+        }
     }
 
     /**
