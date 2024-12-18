@@ -374,10 +374,21 @@ public class FileController {
         }
     }
 
+    /**
+     * 处理打开音频页面的请求
+     *
+     * @param model       用于传递数据到视图的Model对象
+     * @param currentPath 当前文件路径，用于定位文件位置
+     * @param fileName    文件名，用于标识具体音频文件
+     * @return 返回音频页面的视图名称
+     */
     @RequestMapping("/openAudioPage")
-	public String openAudioPage(Model model, String currentPath, String fileName) {
-		model.addAttribute("currentPath", currentPath);
-		model.addAttribute("fileName", fileName);
-		return "audio";
-	}
+    public String openAudioPage(Model model, String currentPath, String fileName) {
+        // 将当前路径添加到模型中，以便在页面上显示或进一步操作
+        model.addAttribute("currentPath", currentPath);
+        // 将文件名添加到模型中，用于在页面上标识或操作特定的音频文件
+        model.addAttribute("fileName", fileName);
+        // 返回音频页面的视图名称，这里的"audio"应该对应一个实际的页面模板文件
+        return "audio";
+    }
 }
