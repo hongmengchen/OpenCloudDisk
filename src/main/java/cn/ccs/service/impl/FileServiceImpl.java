@@ -46,6 +46,7 @@ public class FileServiceImpl implements FileService {
 
     /**
      * 构造方法，用于自动注入相关依赖对象
+     *
      * @param userDao
      * @param fileDao
      * @param officeDao
@@ -704,6 +705,34 @@ public class FileServiceImpl implements FileService {
     }
 
     /**
+     * 从回收站中删除文件
+     * 此方法接收一个HTTP请求和一个文件ID数组，用于从回收站中永久删除文件
+     * 它首先从数据库中检索文件信息，然后从服务器的回收站目录中删除实际文件，
+     * 最后更新回收站的大小信息
+     *
+     * @param request HTTP请求对象，用于获取当前请求的上下文信息
+     * @param fileId  要从回收站中删除的文件的ID数组
+     * @throws Exception 如果文件删除过程中发生错误，则抛出异常
+     */
+    @Override
+    public void delRecycle(HttpServletRequest request, int[] fileId) throws Exception {
+        for (int i = 0; i < fileId.length; i++) {
+            // 获取每个删除文件的id，同时获取该文件对象
+            RecycleFile selectFile = fileDao.selectFile(fileId[i]);
+            // 根据每个删除文件的相对路径拼接绝对路径
+            File testFile = new File(getRecyclePath(request), selectFile.getFilePath());
+            String testFileName = testFile.getName();
+            String relativePath = "\\" + testFileName;
+            System.out.println(relativePath);
+            File srcFile = new File(getRecyclePath(request), relativePath);
+            // 逐一删除数据库所存数据以及该文件
+            fileDao.deleteFile(fileId[i], UserUtils.getUsername(request));
+            delFile(srcFile);
+        }
+        reSize(request);
+    }
+
+    /**
      * 删除所有回收站中的文件
      * <p>
      * 此方法首先获取回收站路径，然后遍历该路径下的所有文件和文件夹，
@@ -849,10 +878,10 @@ public class FileServiceImpl implements FileService {
     /**
      * 重命名文件或文件夹
      *
-     * @param request  HttpServletRequest对象，用于获取文件名
+     * @param request     HttpServletRequest对象，用于获取文件名
      * @param currentPath 当前目录路径
-     * @param srcName  要重命名的文件或文件夹的名称
-     * @param destName 重命名后的文件或文件夹的名称
+     * @param srcName     要重命名的文件或文件夹的名称
+     * @param destName    重命名后的文件或文件夹的名称
      * @return 如果重命名成功，则返回true，否则返回false
      */
     public boolean renameDirectory(HttpServletRequest request, String currentPath, String srcName, String destName) {
