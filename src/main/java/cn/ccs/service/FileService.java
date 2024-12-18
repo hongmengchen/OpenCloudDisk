@@ -15,6 +15,7 @@ public interface FileService {
     public String getFileName(HttpServletRequest request, String fileName, String username) ;
     public List<FileCustom> listFile(String realPath) ;
     public void uploadFilePath(HttpServletRequest request, MultipartFile[] files, String currentPath) throws Exception;
+    public void delDirectory(HttpServletRequest request, String currentPath, String[] directoryName) throws Exception;
 
 
 
