@@ -23,23 +23,22 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import static jdk.nashorn.internal.objects.NativeError.getFileName;
+
 @Service("FileService")
 public class FileServiceImpl implements FileService {
     // 文件相对前缀，用于构建文件在项目中的相对存储路径，指向项目内特定的文件存储目录
     public static final String PREFIX = "WEB-INF" + File.separator + "file" + File.separator;
     // 新用户注册默认文件夹数组，定义了新用户创建时默认会生成的文件夹名称列表，包含如视频、音乐等不同类型的文件夹以及回收站文件夹
     public static final String[] DEFAULT_DIRECTORY = {"vido", "music", "source", "image", User.RECYCLE};
-
-    // 通过构造函数注入UserDao，用于后续与用户相关的数据操作（如查询用户信息、更新用户空间大小等）
     @Autowired
-    public FileServiceImpl(UserDao userDao, FileDao fileDao) {
-        this.userDao = userDao;
-        this.fileDao = fileDao;
-    }
+    private UserDao userDao;
 
-    private final UserDao userDao;
-    private final FileDao fileDao;
+    @Autowired
+    private FileDao fileDao;
 
+    @Autowired
+    private OfficeDao officeDao;
     /**
      * 为用户添加新的命名空间（文件夹）的方法
      * 先获取根路径，然后基于此创建指定的命名空间文件夹，并在该文件夹下创建一系列默认的子文件夹（如视频、音乐等）
@@ -179,7 +178,7 @@ public class FileServiceImpl implements FileService {
                     try {
                         String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
                         String documentId = FileUtils.getDocClient().createDocument(distFile, fileName, suffix).getDocumentId();
-                        OfficeDao.addOffice(documentId, FileUtils.MD5(distFile));
+                        officeDao.addOffice(documentId, FileUtils.MD5(distFile));
                     } catch (Exception e) {
                     }
                 }
