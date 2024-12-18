@@ -143,22 +143,29 @@ public class FileController {
     }
 
     /**
-     * 文件搜索的方法
-     * @param currentpath 当前路径，用于确定文件搜索的目标路径
-     * @param regType 文件搜索的类型，可以是文件名、文件类型等，根据实际需求来定
-     * @return 返回一个Result对象，其中封装了文件搜索结果列表，若搜索操作成功则返回状态码376、操作成功标识true以及"查询成功"提示信息，若操作过程中出现异常则返回状态码371、操作失败标识false以及"查询失败"提示信息
+     * 根据正则表达式和其他条件搜索文件
+     *
+     * @param reg         正则表达式，用于匹配文件名
+     * @param currentPath 当前路径，指定在哪个目录下进行搜索
+     * @param regType     正则表达式类型，可能用于细化搜索条件
+     * @return 返回一个Result对象，包含搜索结果列表如果搜索成功，否则返回失败信息
      */
     @RequestMapping("/searchFile")
-    public @ResponseBody Result<List<FileCustom>> searchFile(String currentpath, String regType) {
-        String reg = request.getParameter("searchReg");
+    public @ResponseBody Result<List<FileCustom>> searchFile(String reg, String currentPath, String regType) {
         try {
-            List<FileCustom> seachFile = fileService.searchFile(request, currentpath, reg , regType);
-            Result<List<FileCustom>> result  = new Result<>(376,true,"查询成功");
-            result.setData(seachFile);
+            // 调用fileService的searchFile方法执行实际的文件搜索逻辑
+            List<FileCustom> searchFile = fileService.searchFile(request, currentPath, reg, regType);
+            // 创建一个成功结果对象，包含状态码、是否成功和成功提示信息
+            Result<List<FileCustom>> result = new Result<>(376, true, "查找成功");
+            // 设置搜索结果到结果对象中
+            result.setData(searchFile);
+            // 返回成功结果对象
             return result;
         } catch (Exception e) {
+            // 捕获异常并打印堆栈跟踪，便于调试和日志记录
             e.printStackTrace();
-            return new Result<>(371,false,"查询失败");
+            // 返回一个失败结果对象，包含状态码、是否成功和失败提示信息
+            return new Result<>(371, false, "查找失败");
         }
     }
 
