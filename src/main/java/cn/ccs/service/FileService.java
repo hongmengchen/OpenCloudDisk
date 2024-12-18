@@ -29,5 +29,11 @@ public interface FileService {
     String countFileSize(HttpServletRequest request);
     //递归计算文件大小
     long countFileSize(java.io.File srcFile);
+    //搜索文件
+    List<FileCustom> searchFile(HttpServletRequest request,String currentPath,String reg,String regType);
+    //搜索文件名
+    String getSearchFileName(HttpServletRequest request, String fileName);
+    //递归搜索文件
+    void matchFile(HttpServletRequest request, List<FileCustom> list, File dirFile, String reg, String regType);
 }
 
