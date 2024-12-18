@@ -14,15 +14,15 @@
 	<!-- 导入 MyBatis 数据源和映射文件配置 -->
     <import resource="applicationContext-dao.xml"/>
 
+	<!-- 导入 SpringMVC 配置 -->
 	<context:component-scan base-package="cn.ccs.service" />
 
-	<!-- 导入 applicationContext-dao.xml 文件 -->
-<!--	<import resource="applicationContext-dao.xml" />-->
-
-	<!--<bean id="transactionManager"
+	<!-- 配置事务管理器 -->
+	<bean id="transactionManager"
 		  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
 		<property name="dataSource" ref="dataSource" />
-	</bean>-->
-	
+	</bean>
+
+	<!-- 配置开启注解事务 -->
 	<tx:annotation-driven  />
 </beans>
