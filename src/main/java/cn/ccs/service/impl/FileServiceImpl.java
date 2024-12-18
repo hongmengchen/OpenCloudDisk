@@ -13,10 +13,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Service("FileService")
 public class FileServiceImpl implements FileService {
@@ -336,27 +337,67 @@ public class FileServiceImpl implements FileService {
      * @return 返回要下载的文件对象，如果不符合下载条件（如文件名数组长度不为1且未完整实现打包逻辑等）则返回null
      */
     @Override
-    public File downPackage(HttpServletRequest request, String currentPath, String[] fileNames, String username) {
+    public File downPackage(HttpServletRequest request, String currentPath, String[] fileNames, String username) throws Exception {
         // 获取文件名
         File downloadFile = null;
         if (currentPath == null) {
             currentPath = "";
         }
-        // 判断是否为单个文件
+        // 判断是否为单个文件，单文件length为1
         if (fileNames.length == 1) {
             downloadFile = new File(getFileName(request, currentPath, username), fileNames[0]);// 返回绝对路径名
             if (downloadFile.isFile()) {
                 return downloadFile;
             }
         }
-        return null;
-        /*String[] sourcePath = new String[fileNames.length];
+        // 批量打包下载
+        String[] sourcePath = new String[fileNames.length];
         for (int i = 0; i < fileNames.length; i++) {
             sourcePath[i] = getFileName(request, currentPath, username) + File.separator + fileNames[i];
         }
         String packageZipName = packageZip(sourcePath);
         downloadFile = new File(packageZipName);
-        return downloadFile;*/
+        return downloadFile;
+    }
+    // 压缩文件
+    private String packageZip(String[] sourcePath) throws Exception {
+        String zipName = sourcePath[0] + (sourcePath.length == 1 ? "" : "等" + sourcePath.length + "个文件") + ".zip";
+        ZipOutputStream zos = null;
+        try {
+            zos = new ZipOutputStream(new FileOutputStream(zipName));
+            for (String string : sourcePath) {
+                writeZos(new File(string), "", zos);
+            }
+        } finally {
+            if (zos != null) {
+                zos.close();
+            }
+        }
+        return zipName;
+    }
+    // 递归压缩文件
+    private void writeZos(File file, String basePath, ZipOutputStream zos) throws IOException {
+        if (!file.exists()) {
+            throw new FileNotFoundException();
+        }
+        if (file.isDirectory()) {
+            File[] listFiles = file.listFiles();
+            if (listFiles.length != 0) {
+                for (File childFile : listFiles) {
+                    writeZos(childFile, basePath + file.getName() + File.separator, zos);
+                }
+            }
+        } else {
+            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+            ZipEntry entry = new ZipEntry(basePath + file.getName());
+            zos.putNextEntry(entry);
+            int count = 0;
+            byte data[] = new byte[1024];
+            while ((count = bis.read(data)) != -1) {
+                zos.write(data, 0, count);
+            }
+            bis.close();
+        }
     }
 
     /**
@@ -405,13 +446,14 @@ public class FileServiceImpl implements FileService {
         }
         return count;
     }
+
     /**
      * 根据条件搜索文件
      *
-     * @param request HTTP请求对象，用于获取用户信息和根路径
+     * @param request     HTTP请求对象，用于获取用户信息和根路径
      * @param currentPath 当前路径，用于确定搜索的起始目录
-     * @param reg 文件名的正则表达式，用于匹配文件名
-     * @param regType 文件类型，用于过滤特定类型的文件
+     * @param reg         文件名的正则表达式，用于匹配文件名
+     * @param regType     文件类型，用于过滤特定类型的文件
      * @return 返回一个包含匹配文件信息的列表
      */
     public List<FileCustom> searchFile(HttpServletRequest request, String currentPath, String reg, String regType) {
@@ -423,30 +465,31 @@ public class FileServiceImpl implements FileService {
     /**
      * 构造文件的完整搜索路径
      *
-     * @param request HTTP请求对象，用于获取用户信息
+     * @param request  HTTP请求对象，用于获取用户信息
      * @param fileName 传入的文件名或路径，用于拼接完整路径
      * @return 返回构造的文件完整路径
      */
     public String getSearchFileName(HttpServletRequest request, String fileName) {
-        if (fileName == null||fileName.equals("\\")) {
+        if (fileName == null || fileName.equals("\\")) {
             System.out.println(1);
             fileName = "";
         }
         String username = UserUtils.getUsername(request);
-        String realpath=getRootPath(request) + username + File.separator + fileName;
+        String realpath = getRootPath(request) + username + File.separator + fileName;
         return realpath;
     }
+
     /**
      * 递归匹配指定目录下的文件
      *
      * @param request HTTP请求对象，用于获取用户信息
-     * @param list 用于存储匹配文件的信息的列表
+     * @param list    用于存储匹配文件的信息的列表
      * @param dirFile 当前遍历的目录文件对象
-     * @param reg 文件名的正则表达式，用于匹配文件名
+     * @param reg     文件名的正则表达式，用于匹配文件名
      * @param regType 文件类型，用于过滤特定类型的文件
      */
     public void matchFile(HttpServletRequest request, List<FileCustom> list, File dirFile, String reg,
-                           String regType) {
+                          String regType) {
         File[] listFiles = dirFile.listFiles();
         if (listFiles != null) {
             for (File file : listFiles) {
