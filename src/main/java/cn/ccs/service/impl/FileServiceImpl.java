@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -243,46 +244,73 @@ public class FileServiceImpl implements FileService {
             // 拼接源文件的地址
             String srcPath = currentPath + File.separator + fileName;
             // 根据源文件相对地址拼接绝对路径
-            File src = new File(getFileName(request, srcPath)); // 即将删除的文件地址
-            File destDir = new File(getRecyclePath(request));  // 回收站目录地址
+            File src = new File(getFileName(request, srcPath)); // 即将删除的文件/文件夹
+            File destDir = new File(getRecyclePath(request));  // 回收站目录
 
             // 确保目标目录存在
             if (!destDir.exists()) {
                 destDir.mkdirs();
             }
 
-            // 构建目标文件路径
-            File dest = new File(destDir, src.getName());
+            // 生成唯一的目标文件名（避免冲突）
+            File dest = getUniqueFileName(destDir, src);
 
-            // 如果目标文件存在，则重命名目标文件
-            if (dest.exists()) {
-                String baseName = src.getName();
-                String extension = "";
-                int dotIndex = baseName.lastIndexOf('.');
-                if (dotIndex != -1) {
-                    extension = baseName.substring(dotIndex); // 提取扩展名（包括点）
-                    baseName = baseName.substring(0, dotIndex); // 提取文件名部分
+            // 如果是目录，递归移动目录；如果是文件，直接移动
+            if (src.isDirectory()) {
+                // 确保目标目录存在，并且使用唯一的目录名称
+                if (dest.exists()) {
+                    // 如果目标目录已经存在，就直接删除该目录，避免 FileExistsException
+                    org.apache.commons.io.FileUtils.deleteDirectory(dest);
                 }
-                int duplicateCounter = 1;
-                String newFileName = baseName + "(" + duplicateCounter + ")" + extension;
-
-                // 循环生成唯一的文件名
-                dest = new File(destDir, newFileName);
-                while (dest.exists()) {
-                    duplicateCounter++;
-                    newFileName = baseName + "(" + duplicateCounter + ")" + extension;
-                    dest = new File(destDir, newFileName);
-                }
+                org.apache.commons.io.FileUtils.moveDirectory(src, dest);
+            } else {
+                org.apache.commons.io.FileUtils.moveFile(src, dest);
             }
-
-            // 移动文件到目标文件路径
-            org.apache.commons.io.FileUtils.moveFile(src, dest);
 
             // 保存本条删除信息
             FileDao.insertFiles(srcPath, UserUtils.getUsername(request));
         }
         // 重新计算文件大小
         reSize(request);
+    }
+
+    /**
+     * 生成唯一的目标文件名（避免与目标目录中的文件或文件夹同名）
+     *
+     * @param destDir 目标目录
+     * @param src     源文件/文件夹
+     * @return 唯一的目标文件对象
+     */
+    private File getUniqueFileName(File destDir, File src) {
+        String baseName = src.getName();
+        String extension = ""; // 默认扩展名为空
+        int dotIndex = baseName.lastIndexOf('.');
+
+        // 如果是文件，提取文件名和扩展名
+        if (dotIndex != -1 && !src.isDirectory()) {
+            extension = baseName.substring(dotIndex); // 获取扩展名（例如 ".png"）
+            baseName = baseName.substring(0, dotIndex); // 获取文件名部分（例如 "file"）
+        }
+
+        // 初始目标文件或目录路径
+        File dest = new File(destDir, baseName + extension);
+        int duplicateCounter = 1;
+
+        // 生成唯一文件名或目录名
+        while (dest.exists()) {
+            String newName;
+            if (!src.isDirectory()) {
+                // 如果是文件，扩展名加在文件名后
+                newName = baseName + "(" + duplicateCounter + ")" + extension; // 文件名(1).png
+            } else {
+                // 如果是目录，后缀加在目录名后
+                newName = baseName + "(" + duplicateCounter + ")"; // 目录名(1)
+            }
+            dest = new File(destDir, newName); // 创建新的文件/目录
+            duplicateCounter++;
+        }
+
+        return dest; // 返回唯一的目标文件对象
     }
 
     /**
