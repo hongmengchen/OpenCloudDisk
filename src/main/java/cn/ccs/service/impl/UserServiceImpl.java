@@ -49,6 +49,18 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public User findUser(String username) {
+        User user = null;
+        try {
+            user = userDao.findUserByUserName(username);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return user;
+        }
+        return user;
+    }
+
     /**
      * 获取用户的当前所用空间大小
      *
@@ -76,7 +88,6 @@ public class UserServiceImpl implements UserService {
      *
      * @param user 待添加的用户对象
      * @return 添加成功返回true，用户已存在返回false
-     * @throws Exception 如果用户已存在或其它原因导致添加失败，抛出异常
      */
     public boolean addUser(User user) throws Exception {
         // 检查用户是否已存在
