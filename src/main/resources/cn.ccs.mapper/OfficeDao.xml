@@ -11,6 +11,4 @@
     <select id="getOfficeId" parameterType="java.lang.String" resultType="java.lang.String">
         select officeid from office where officeMd5 = #{officeMd5}
     </select>
-
-
 </mapper>
