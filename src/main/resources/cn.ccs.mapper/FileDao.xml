@@ -5,7 +5,37 @@
 <!-- 文件持久层 -->
 <mapper namespace="cn.ccs.dao.FileDao">
     <insert id="insertFiles">
-        insert into file(filePath,userName) values(#{filePath},#{userName})
+        insert into File(filePath, userName)
+        values (#{filePath}, #{userName})
     </insert>
+
+    <!--查询回收站中数据-->
+    <select id="selectFiles" resultType="cn.ccs.pojo.RecycleFile">
+        select *
+        from File
+        where userName = #{userName}
+    </select>
+
+    <!--根据id查询文件表-->
+    <select id="selectFile" resultType="cn.ccs.pojo.RecycleFile">
+        select *
+        from File
+        where fileId = #{fileId}
+    </select>
+
+    <!--根据id、用户名删除-->
+    <delete id="deleteFile">
+        delete
+        from File
+        where fileId = #{fileId}
+          and userName = #{userName}
+    </delete>
+
+    <!--根据当前用户名删除所有的删除记录-->
+    <delete id="deleteFiles">
+        delete
+        from File
+        where userName = #{userName}
+    </delete>
 
 </mapper>
