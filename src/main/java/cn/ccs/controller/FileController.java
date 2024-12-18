@@ -211,4 +211,25 @@ public class FileController {
             return new Result<>(351, false, "重命名失败");
         }
     }
+
+    /**
+     * 移动目录控制器
+     *
+     * 该方法负责处理移动目录的请求，它接收当前路径、目录名称数组和目标路径作为参数，
+     * 并调用FileService的moveDirectory方法来执行目录移动操作
+     *
+     * @param currentPath 当前路径，表示需要移动的目录所在的位置
+     * @param directoryName 目录名称数组，表示需要移动的一个或多个目录的名称
+     * @param targetdirectorypath 目标路径，表示目录移动的目的地
+     * @return 返回一个Result对象，包含移动操作的结果信息，包括状态码、是否成功和提示信息
+     */
+    @RequestMapping("/moveDirectory")
+    public @ResponseBody Result<String> moveDirectory(String currentPath,String[] directoryName, String targetdirectorypath) {
+        try {
+            fileService.moveDirectory(request, currentPath, directoryName,targetdirectorypath);
+            return new Result<>(366, true, "移动成功");
+        } catch (Exception e) {
+            return new Result<>(361, true, "移动失败");
+        }
+    }
 }
