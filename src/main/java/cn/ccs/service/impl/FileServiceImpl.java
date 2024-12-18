@@ -4,6 +4,7 @@ import cn.ccs.dao.UserDao;
 import cn.ccs.dao.FileDao;
 import cn.ccs.dao.OfficeDao;
 import cn.ccs.pojo.FileCustom;
+import cn.ccs.pojo.SummaryFile;
 import cn.ccs.pojo.User;
 import cn.ccs.service.FileService;
 import cn.ccs.utils.FileUtils;
@@ -14,10 +15,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+
+import static jdk.nashorn.internal.objects.NativeError.getFileName;
 
 @Service("FileService")
 public class FileServiceImpl implements FileService {
@@ -532,5 +538,120 @@ public class FileServiceImpl implements FileService {
             }
         }
     }
-}
 
+    /**
+     * 根据给定路径生成摘要文件对象
+     * 此方法用于递归遍历指定路径下的所有文件夹，并构建一个摘要文件（SummaryFile）对象，
+     * 该对象包含文件夹的相关信息，如文件夹名称、路径以及该文件夹下包含的子文件夹列表等
+     *
+     * @param realPath 文件或文件夹的实际路径
+     * @param number   用于决定文件路径显示级别的整数
+     * @return 返回一个摘要文件（SummaryFile）对象，包含文件夹的摘要信息
+     */
+    public SummaryFile summarylistFile(String realPath, int number) {
+        File file = new File(realPath);
+        SummaryFile sF = new SummaryFile();
+        List<SummaryFile> returnlist = new ArrayList<SummaryFile>();
+        if (file.isDirectory()) {
+            sF.setFile(false);
+            if (realPath.length() <= number) {
+                sF.setFileName("yun盘");
+                sF.setPath("");
+            } else {
+                String path = file.getPath();
+                sF.setFileName(file.getName());
+                //截取固定长度 的字符串，从number开始到value.length-number结束.
+                sF.setPath(path.substring(number));
+            }
+            /* 设置抽象文件夹的包含文件集合 */
+            for (File filex : file.listFiles()) {
+                //获取当前文件的路径，构造该文件
+                SummaryFile innersF = summarylistFile(filex.getPath(), number);
+                if (!innersF.isFile()) {
+                    returnlist.add(innersF);
+                }
+            }
+            sF.setListFile(returnlist);
+            /* 设置抽象文件夹的包含文件夹个数 */
+            sF.setListdiretory(returnlist.size());
+        } else {
+            sF.setFile(true);
+        }
+        return sF;
+    }
+
+    /**
+     * 重写复制目录的方法
+     *
+     * @param request             HttpServletRequest对象，用于获取文件名
+     * @param currentPath         当前目录路径
+     * @param directoryName       要复制的目录名称数组
+     * @param targetdirectorypath 目标目录路径
+     * @throws Exception 如果复制过程中发生错误，则抛出异常
+     */
+    @Override
+    public void copyDirectory(HttpServletRequest request, String currentPath, String[] directoryName, String targetdirectorypath) throws Exception {
+        for (String srcName : directoryName) {
+            File srcFile = new File(getFileName(request, currentPath), srcName);
+            File targetFile = new File(getFileName(request, targetdirectorypath), srcName);
+
+            String srcname = srcName;
+            String prefixname = "";
+            String targetname = "";
+            if (targetFile.exists()) {
+                String[] srcnamesplit = srcname.split("\\)");
+                if (srcnamesplit.length > 1) {
+                    String intstring = srcnamesplit[0].substring(1);
+                    Pattern pattern = Pattern.compile("[0-9]*");
+                    Matcher isNum = pattern.matcher(intstring);
+                    if (isNum.matches()) {
+                        srcname = srcname.substring(srcnamesplit[0].length() + 1);
+                    }
+                }
+                for (int i = 1; true; i++) {
+                    prefixname = "(" + i + ")";
+                    targetname = prefixname + srcname;
+                    targetFile = new File(targetFile.getParent(), targetname);
+                    if (!targetFile.exists()) {
+                        break;
+                    }
+                }
+                targetFile = new File(targetFile.getParent(), targetname);
+            }
+            /* 复制 */
+            copyfile(srcFile, targetFile);
+
+        }
+    }
+
+    /**
+     * 复制文件或文件夹
+     * 此方法递归地复制给定的源文件或文件夹到目标位置如果源是一个文件，它将直接复制如果源是一个文件夹，它将递归复制文件夹及其内容
+     *
+     * @param srcFile    源文件或文件夹
+     * @param targetFile 目标文件或文件夹
+     * @throws IOException 如果在复制过程中发生I/O错误
+     */
+    public void copyfile(File srcFile, File targetFile) throws IOException {
+        if (!srcFile.isDirectory()) {
+            /* 如果是文件，直接复制 */
+            targetFile.createNewFile();
+            FileInputStream src = (new FileInputStream(srcFile));
+            FileOutputStream target = new FileOutputStream(targetFile);
+            FileChannel in = src.getChannel();
+            FileChannel out = target.getChannel();
+            in.transferTo(0, in.size(), out);
+            src.close();
+            target.close();
+        } else {
+            /* 如果是文件夹，再遍历 */
+            File[] listFiles = srcFile.listFiles();
+            targetFile.mkdir();
+            for (File file : listFiles) {
+                File realtargetFile = new File(targetFile, file.getName());
+                copyfile(file, realtargetFile);
+            }
+        }
+    }
+
+}
