@@ -12,4 +12,7 @@ public interface OfficeDao {
 
     // 根据md5码获取officeId
     String getOfficeId(String officeMd5) throws Exception;
+
+    // 添加office文件
+    void addOfficefile(@Param("officeMd5") String officeMd5) throws Exception;
 }

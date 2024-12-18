@@ -11,4 +11,8 @@
     <select id="getOfficeId" parameterType="java.lang.String" resultType="java.lang.String">
         select officeid from office where officeMd5 = #{officeMd5}
     </select>
+
+    <insert id="addOfficefile">
+		insert into office(officeMd5) values(#{officeMd5})
+	</insert>
 </mapper>
