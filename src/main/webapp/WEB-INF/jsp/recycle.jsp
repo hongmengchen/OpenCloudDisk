@@ -4,13 +4,14 @@
 <html>
 <head>
 
-<title>My JSP 'index.jsp' starting page</title>
+<title>回收站 | OCD</title>
 
 <meta http-equiv="pragma" content="no-cache">
 <meta http-equiv="cache-control" content="no-cache">
 <meta http-equiv="expires" content="0">
 <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
 <meta http-equiv="description" content="This is my page">
+<link rel="icon" href="${pageContext.request.contextPath }/img/logo.png" type="image/">
 <link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 <link href="${pageContext.request.contextPath }/css/layer.css" rel="stylesheet">
 <script src="${pageContext.request.contextPath }/js/jquery.min.js"></script>
