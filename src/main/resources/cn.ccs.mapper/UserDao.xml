@@ -45,4 +45,9 @@
         where username = #{username}
     </select>
 
+    <!-- 更新用户已用空间大小 -->
+    <!-- 参数：String类型的username和String类型的countSize -->
+    <update id="reSize">
+        update user set countSize = #{countSize} where username = #{username}
+    </update>
 </mapper>
