@@ -20,8 +20,12 @@ public class FileServiceImpl implements FileService {
     // 新用户注册默认文件夹
     public static final String[] DEFAULT_DIRECTORY = {"vido", "music", "source", "image", User.RECYCLE};
 
+    private final UserDao userDao;
+
     @Autowired
-    private UserDao userDao;
+    public FileServiceImpl(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     @Override
     public void addNewNameSpace(HttpServletRequest request, String namespace) {
