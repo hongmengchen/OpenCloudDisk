@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 public interface UserDao {
     // 根据账号密码查询用户
     User findUser(User user);
+    User findUserByUserName(String username) throws Exception;
     // 根据用户名查询用户空间大小
     String getCountSize(String username);
     //注册用户
