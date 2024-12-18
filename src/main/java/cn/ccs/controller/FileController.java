@@ -1,6 +1,7 @@
 package cn.ccs.controller;
 
 import cn.ccs.pojo.FileCustom;
+import cn.ccs.pojo.RecycleFile;
 import cn.ccs.pojo.Result;
 import cn.ccs.pojo.SummaryFile;
 import cn.ccs.service.FileService;
@@ -254,4 +255,73 @@ public class FileController {
             return new Result<>(361, true, "移动失败");
         }
     }
+
+    /**
+     * 处理回收站文件展示请求
+     * <p>
+     * 该方法负责从文件服务中获取已删除（回收站内）的文件信息，并将其设置到请求属性中，
+     * 以便在页面上展示这些文件信息
+     *
+     * @return 返回"recycle"字符串，通常代表一个逻辑视图名称，用于展示回收站文件的页面
+     */
+    @RequestMapping("/recycleFile")
+    public String recycleFile() {
+        try {
+            // 调用文件服务，获取已删除的文件列表
+            List<RecycleFile> findDelFile = fileService.recycleFiles(request);
+            // 如果获取到的文件列表不为空，则将其设置到请求属性中
+            if (null != findDelFile && findDelFile.size() != 0) {
+                request.setAttribute("findDelFile", findDelFile);
+            }
+        } catch (Exception e) {
+            // 异常处理：打印异常信息，通常在生产环境中应避免直接打印堆栈跟踪
+            e.printStackTrace();
+        }
+        // 返回逻辑视图名称，用于展示回收站文件的页面
+        return "recycle";
+    }
+
+    /**
+     * 还原目录
+     * <p>
+     * 该方法通过文件ID数组还原（恢复）指定的目录此方法使用@RequestMapping注解来处理HTTP请求，
+     * 并返回一个Result对象，其中包含处理结果和消息
+     *
+     * @param fileId 文件ID数组，标识需要还原的目录
+     * @return 返回一个Result对象，包含处理状态码、是否成功以及操作消息
+     */
+    @RequestMapping("/revertDirectory")
+    public @ResponseBody Result<String> revertDirectory(int[] fileId) {
+        try {
+            // 调用FileService中的方法来实际执行目录的还原操作
+            fileService.revertDirectory(request, fileId);
+            // 如果还原成功，返回成功状态码和成功消息
+            return new Result<>(327, true, "还原成功");
+        } catch (Exception e) {
+            // 如果还原过程中发生异常，返回失败状态码和失败消息
+            return new Result<>(322, false, "还原失败");
+        }
+    }
+
+    /**
+     * 清空回收站
+     * <p>
+     * 该方法用于清空回收站，删除所有在回收站中的目录该方法使用@RequestMapping注解来处理HTTP请求，
+     * 并返回一个Result对象，其中包含处理结果和消息
+     *
+     * @return 返回一个Result对象，包含处理状态码、是否成功以及操作消息
+     */
+    @RequestMapping("/delAllRecycle")
+    public @ResponseBody Result<String> delAllRecycleDirectory() {
+        try {
+            // 调用FileService中的方法来实际执行清空回收站的操作
+            fileService.delAllRecycle(request);
+            // 返回状态码
+            return new Result<>(327, true, "删除成功");
+        } catch (Exception e) {
+            // 如果清空回收站过程中发生异常，返回失败状态码和失败消息
+            return new Result<>(322, false, "删除失败");
+        }
+    }
+
 }
