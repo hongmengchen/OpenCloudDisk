@@ -4,6 +4,7 @@ import cn.ccs.pojo.FileCustom;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.util.List;
 
 public interface FileService {
@@ -16,6 +17,12 @@ public interface FileService {
     public List<FileCustom> listFile(String realPath) ;
     public void uploadFilePath(HttpServletRequest request, MultipartFile[] files, String currentPath) throws Exception;
     public void delDirectory(HttpServletRequest request, String currentPath, String[] directoryName) throws Exception;
+
+    // 下载文件打包
+    public File downPackage(HttpServletRequest request, String currentPath, String[] fileNames, String username) throws Exception;
+
+    // 删除压缩文件包
+    public void deleteDownPackage(File downloadFile);
 
 
 

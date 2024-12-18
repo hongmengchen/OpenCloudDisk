@@ -10,19 +10,17 @@ import cn.ccs.utils.FileUtils;
 import cn.ccs.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.zip.ZipOutputStream;
 
 @Service("FileService")
 public class FileServiceImpl implements FileService {
@@ -31,8 +29,12 @@ public class FileServiceImpl implements FileService {
     // 新用户注册默认文件夹
     public static final String[] DEFAULT_DIRECTORY = {"vido", "music", "source", "image", User.RECYCLE};
 
+    private final UserDao userDao;
+
     @Autowired
-    private UserDao userDao;
+    public FileServiceImpl(UserDao userDao) {
+        this.userDao = userDao;
+    }
 
     @Override
     public void addNewNameSpace(HttpServletRequest request, String namespace) {
@@ -178,6 +180,38 @@ public class FileServiceImpl implements FileService {
     public String getRecyclePath(HttpServletRequest request) {
         return getFileName(request, User.RECYCLE);
     }
+
+    // 下载文件打包
+    @Override
+    public File downPackage(HttpServletRequest request, String currentPath, String[] fileNames, String username) {
+        // 获取文件名
+        File downloadFile = null;
+		if (currentPath == null) {
+			currentPath = "";
+		}
+        // 判断是否为单个文件
+		if (fileNames.length == 1) {
+			downloadFile = new File(getFileName(request, currentPath, username), fileNames[0]);//返回绝对路径名
+			if (downloadFile.isFile()) {
+				return downloadFile;
+			}
+		}
+        return null;
+		/*String[] sourcePath = new String[fileNames.length];
+		for (int i = 0; i < fileNames.length; i++) {
+			sourcePath[i] = getFileName(request, currentPath, username) + File.separator + fileNames[i];
+		}
+		String packageZipName = packageZip(sourcePath);
+		downloadFile = new File(packageZipName);
+		return downloadFile;*/
+    }
+
+    // 删除压缩文件包
+	public void deleteDownPackage(File downloadFile) {
+		if (downloadFile.getName().endsWith(".zip")) {
+			downloadFile.delete();
+		}
+	}
 }
 
 
