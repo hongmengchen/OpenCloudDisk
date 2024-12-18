@@ -4,8 +4,9 @@
 <html>
 <head>
 
-<title>共享云盘</title>
+<title>注册 | OCD</title>
 <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+<link rel="icon" href="${pageContext.request.contextPath }/img/logo.png" type="image/">
 <link rel="stylesheet" href="${pageContext.request.contextPath }/css/regist.css" />
 <script type="text/javascript" src="${pageContext.request.contextPath }/js/jquery.min.js"></script>
 <title></title>
