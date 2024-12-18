@@ -3,7 +3,10 @@ package cn.ccs.service.impl;
 import cn.ccs.dao.UserDao;
 import cn.ccs.dao.FileDao;
 import cn.ccs.dao.OfficeDao;
-import cn.ccs.pojo.*;
+import cn.ccs.pojo.FileCustom;
+import cn.ccs.pojo.RecycleFile;
+import cn.ccs.pojo.SummaryFile;
+import cn.ccs.pojo.User;
 import cn.ccs.service.FileService;
 import cn.ccs.utils.FileUtils;
 import cn.ccs.utils.UserUtils;
@@ -16,6 +19,7 @@ import java.io.*;
 import java.io.File;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -271,8 +275,10 @@ public class FileServiceImpl implements FileService {
                 org.apache.commons.io.FileUtils.moveFile(src, dest);
             }
 
+            // 将目标路径转换为“\\”格式
+            String savedPath = "\\\\" + dest.getName(); // 获取目标文件名，并在前面加上“\\”
             // 保存本条删除信息
-            fileDao.insertFiles(srcPath, UserUtils.getUsername(request));
+            fileDao.insertFiles(savedPath, UserUtils.getUsername(request));
         }
         // 重新计算文件大小
         reSize(request);
@@ -549,18 +555,19 @@ public class FileServiceImpl implements FileService {
             }
         }
     }
+
     /**
      * 移动目录
      * 此方法负责将指定的目录从一个位置移动到另一个位置
      * 如果目标位置已经存在同名目录，将对新目录进行重命名以避免覆盖
      *
-     * @param request 当前请求对象，用于获取基础路径信息
-     * @param currentPath 当前目录的路径
-     * @param directoryName 需要移动的目录名称数组
+     * @param request             当前请求对象，用于获取基础路径信息
+     * @param currentPath         当前目录的路径
+     * @param directoryName       需要移动的目录名称数组
      * @param targetdirectorypath 目标目录的路径
      * @throws Exception 如果移动过程中发生错误，则抛出异常
      */
-    public void moveDirectory(HttpServletRequest request, String currentPath, String[] directoryName,String targetdirectorypath) throws Exception {
+    public void moveDirectory(HttpServletRequest request, String currentPath, String[] directoryName, String targetdirectorypath) throws Exception {
         for (String srcName : directoryName) {
             File srcFile = new File(getFileName(request, currentPath), srcName);
             File targetFile = new File(getFileName(request, targetdirectorypath), srcName);
@@ -593,6 +600,7 @@ public class FileServiceImpl implements FileService {
             delFile(srcFile);
         }
     }
+
     /**
      * 删除指定的文件或文件夹及其内容
      *
@@ -621,6 +629,80 @@ public class FileServiceImpl implements FileService {
             srcFile.delete();
         }
     }
+
+    /**
+     * 回收文件信息
+     *
+     * @param request HTTP请求对象，用于获取当前用户信息
+     * @return 返回一个RecycleFile对象列表，包含回收的文件信息
+     * @throws Exception 如果文件查询过程中发生错误，则抛出异常
+     */
+    @Override
+    public List<RecycleFile> recycleFiles(HttpServletRequest request) throws Exception {
+        // 获取当前用户名称，并查询该用户的所有文件
+        List<RecycleFile> recycleFiles = fileDao.selectFiles(UserUtils.getUsername(request));
+        for (RecycleFile file : recycleFiles) {
+            // 根据文件路径创建File对象，用于获取文件名和最后修改时间
+            File f = new File(getRecyclePath(request), new File(file.getFilePath()).getName());
+            // 设置文件名
+            file.setFileName(f.getName());
+            // 设置文件最后修改时间
+            file.setLastTime(FileUtils.formatTime(f.lastModified()));
+        }
+        // 返回包含回收文件信息的列表
+        return recycleFiles;
+    }
+
+    /**
+     * 从回收站恢复文件到原始位置
+     *
+     * @param request HTTP请求对象，用于获取回收站路径和文件原始路径
+     * @param fileId  文件ID数组，标识需要恢复的文件
+     * @throws Exception 如果文件移动或数据库操作失败，则抛出异常
+     */
+    @Override
+    public void revertDirectory(HttpServletRequest request, int[] fileId) throws Exception {
+        // 遍历每个文件ID
+        for (int id : fileId) {
+            // 通过文件ID从数据库中查询文件信息
+            RecycleFile file = fileDao.selectFile(id);
+            // 获取文件名，用于定位回收站中的文件
+            String fileName = new File(file.getFilePath()).getName();
+            // 构造回收站中的文件路径
+            File src = new File(getRecyclePath(request), fileName);
+            // 构造文件原始位置路径
+            File dest = new File(getFileName(request, file.getFilePath()));
+            // 将文件从回收站移动到原始位置
+            org.apache.commons.io.FileUtils.moveToDirectory(src, dest.getParentFile(), true);
+            // 更新数据库，标记文件已从回收站移除
+            fileDao.deleteFile(id, UserUtils.getUsername(request));
+        }
+    }
+
+    /**
+     * 删除所有回收站中的文件
+     * <p>
+     * 此方法首先获取回收站路径，然后遍历该路径下的所有文件和文件夹，
+     * 调用delFile方法递归删除这些文件和文件夹最后，根据用户删除数据库中的相关记录，
+     * 并重新计算存储空间大小
+     *
+     * @param request HTTP请求对象，用于获取当前用户的回收站路径和用户名
+     * @throws Exception 如果文件操作或数据库操作失败，抛出异常
+     */
+    @Override
+    public void delAllRecycle(HttpServletRequest request) throws Exception {
+        // 获取回收站中的所有文件
+        File file = new File(getRecyclePath(request));
+        // 遍历文件夹下所有文件
+        File[] inferiorFile = file.listFiles();
+        for (File f : inferiorFile) {
+            delFile(f);  // 调用本类下面的delFile()方法
+        }
+        // 根据用户进行删除
+        fileDao.deleteFiles(UserUtils.getUsername(request));
+        reSize(request);
+    }
+
     /**
      * 根据给定路径生成摘要文件对象
      * 此方法用于递归遍历指定路径下的所有文件夹，并构建一个摘要文件（SummaryFile）对象，
@@ -735,7 +817,8 @@ public class FileServiceImpl implements FileService {
             }
         }
     }
-// 重命名
+
+    // 重命名
     public boolean renameDirectory(HttpServletRequest request, String currentPath, String srcName, String destName) {
         //根据源文件名  获取  源地址
         File file = new File(getFileName(request, currentPath), srcName);
