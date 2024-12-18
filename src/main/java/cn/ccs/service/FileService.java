@@ -67,6 +67,9 @@ public interface FileService {
     // 获取概览文件
     SummaryFile summarylistFile(String realPath, int number);
 
+    // 打开文档文件
+    String openOffice(HttpServletRequest request, String currentPath, String fileName) throws Exception;
+
     // 复制到某一个目录
     void copyDirectory(HttpServletRequest request,String currentPath,String[] directoryName, String targetdirectorypath) throws Exception;
 

@@ -834,6 +834,26 @@ public class FileServiceImpl implements FileService {
     }
 
     /**
+     * 打开办公文件方法
+     * <p>
+     * 该方法用于根据请求和文件路径获取办公文件的ID它首先根据请求和当前路径构建文件对象，
+     * 然后使用MD5算法计算该文件的唯一标识，并调用officeDao的getOfficeId方法获取对应的办公文件ID
+     *
+     * @param request     HttpServletRequest对象，包含请求信息
+     * @param currentPath 当前文件路径，用于定位文件位置
+     * @param fileName    文件名，用于指定具体要打开的文件
+     * @return 返回办公文件的ID，用于进一步的操作或引用
+     * @throws Exception 如果在处理过程中遇到错误，抛出异常
+     */
+    @Override
+    public String openOffice(HttpServletRequest request, String currentPath, String fileName) throws Exception {
+        // 打印文件对象，用于调试和验证文件路径是否正确
+        System.out.println(new File(getFileName(request, currentPath), fileName));
+        // 计算文件的MD5值，并调用dao层方法获取办公文件ID
+        return officeDao.getOfficeId(FileUtils.MD5(new File(getFileName(request, currentPath), fileName)));
+    }
+
+    /**
      * 重写复制目录的方法
      *
      * @param request             HttpServletRequest对象，用于获取文件名

@@ -391,4 +391,39 @@ public class FileController {
         // 返回音频页面的视图名称，这里的"audio"应该对应一个实际的页面模板文件
         return "audio";
     }
+
+    /**
+     * 使用@RequestMapping注解来映射HTTP请求到处理方法
+     * 该方法的目的是处理对"/openOffice"路径的请求，尝试打开一个Office文档并返回结果
+     *
+     * @param currentPath 当前文件路径，用于定位文件位置
+     * @param fileName    文件名，用于识别和处理特定的文件
+     * @param fileType    文件类型，虽然在方法体内未直接使用，但可能用于前期验证或处理逻辑
+     * @return 返回一个Result对象，包含处理结果和相关数据
+     */
+    @RequestMapping("/openOffice")
+    public @ResponseBody Result<String> openOffice(String currentPath,
+                                                   String fileName,
+                                                   String fileType) {
+        try {
+            // 调用fileService的openOffice方法来处理文件
+            String openOffice = fileService.openOffice(request, currentPath, fileName);
+            if (openOffice != null) {
+                // 如果文件成功打开，获取PDF文件路径并保存到session
+                String pdfPath = (String) request.getSession().getAttribute(fileName);
+                request.getSession().setAttribute("PDFID", openOffice);
+                request.getSession().setAttribute(openOffice, pdfPath);
+                // 创建一个成功的Result对象，并返回打开的Office文档标识
+                Result<String> result = new Result<>(505, true, "打开成功");
+                result.setData(openOffice);
+                return result;
+            }
+            // 如果文件打开失败，返回一个表示失败的Result对象
+            return new Result<>(501, false, "打开失败");
+        } catch (Exception e) {
+            // 捕获并打印异常，然后返回一个表示失败的Result对象
+            e.printStackTrace();
+            return new Result<>(501, false, "打开失败");
+        }
+    }
 }
