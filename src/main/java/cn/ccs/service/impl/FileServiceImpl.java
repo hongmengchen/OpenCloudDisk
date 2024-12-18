@@ -36,7 +36,7 @@ public class FileServiceImpl implements FileService {
         this.userDao = userDao;
         this.fileDao = fileDao;
     }
-    
+
     private final UserDao userDao;
     private final FileDao fileDao;
 
