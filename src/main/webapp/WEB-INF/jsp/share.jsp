@@ -5,13 +5,14 @@
 <html>
 <head>
 
-<title>My JSP 'more.jsp' starting page</title>
+<title>分享 | OCD</title>
 
 <meta http-equiv="pragma" content="no-cache">
 <meta http-equiv="cache-control" content="no-cache">
 <meta http-equiv="expires" content="0">
 <meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
 <meta http-equiv="description" content="This is my page">
+<link rel="icon" href="${pageContext.request.contextPath }/img/logo.png" type="image/">
 <link href="${pageContext.request.contextPath }/css/bootstrap.min.css"
 	rel="stylesheet" />
 <link href="${pageContext.request.contextPath }/css/layer.css"
