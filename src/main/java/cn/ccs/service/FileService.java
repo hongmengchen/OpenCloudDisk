@@ -1,6 +1,7 @@
 package cn.ccs.service;
 
 import cn.ccs.pojo.FileCustom;
+import cn.ccs.pojo.RecycleFile;
 import cn.ccs.pojo.SummaryFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,30 +31,35 @@ public interface FileService {
     public File downPackage(HttpServletRequest request, String currentPath, String[] fileNames, String username) throws Exception;
     // 删除压缩文件包
     public void deleteDownPackage(File downloadFile);
-    //获取文件大小
+    // 获取文件大小
     void reSize(HttpServletRequest request);
-    //计算用户已上传文件大小
+    // 计算用户已上传文件大小
     String countFileSize(HttpServletRequest request);
-    //递归计算文件大小
+    // 递归计算文件大小
     long countFileSize(java.io.File srcFile);
-    //搜索文件
+    // 搜索文件
     List<FileCustom> searchFile(HttpServletRequest request,String currentPath,String reg,String regType);
-    //搜索文件名
+    // 搜索文件名
     String getSearchFileName(HttpServletRequest request, String fileName);
-    //递归搜索文件
+    // 递归搜索文件
     void matchFile(HttpServletRequest request, List<FileCustom> list, File dirFile, String reg, String regType);
-    //获取概览文件
+    // 获取概览文件
     SummaryFile summarylistFile(String realPath, int number);
-    //复制目录
+    // 复制目录
     void copyDirectory(HttpServletRequest request,String currentPath,String[] directoryName, String targetdirectorypath) throws Exception;
-    //复制文件
+    // 复制文件
     void copyfile(File srcFile, File targetFile) throws IOException;
-    //重命名目录
+    // 重命名目录
     public boolean renameDirectory(HttpServletRequest request, String currentPath, String srcName, String destName);
-    //移动目录
+    // 移动目录
     void moveDirectory(HttpServletRequest request, String currentPath, String[] directoryName,String targetdirectorypath) throws Exception;
-    //删除文件
+    // 删除文件
     void delFile(File srcFile) throws Exception;
-
+    // 回收站显示所有删除文件
+    List<RecycleFile> recycleFiles(HttpServletRequest request) throws Exception;
+    // 还原的文件
+    void revertDirectory(HttpServletRequest request, int[] fileId) throws Exception;
+    // 清空回收站文件
+    void delAllRecycle(HttpServletRequest request) throws Exception;
 }
 
