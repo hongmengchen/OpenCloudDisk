@@ -37,12 +37,13 @@
     </servlet-mapping>
 
     <!-- 静态资源映射 -->
-    <servlet-mapping>
-        <servlet-name>default</servlet-name>
-        <url-pattern>/css/*</url-pattern>
-        <url-pattern>/js/*</url-pattern>
-        <url-pattern>/img/*</url-pattern>
-        <url-pattern>/file/*</url-pattern>
-    </servlet-mapping>
+<servlet-mapping>
+<servlet-name>default</servlet-name>
+<url-pattern>*.css</url-pattern>
+<url-pattern>*.js</url-pattern>
+<url-pattern>*.png</url-pattern>
+<url-pattern>*.gif</url-pattern>
+<url-pattern>*.jpg</url-pattern>
+</servlet-mapping>
 
 </web-app>
