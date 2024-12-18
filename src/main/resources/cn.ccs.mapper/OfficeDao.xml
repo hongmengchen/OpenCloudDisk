@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- 文档持久层 -->
-<mapper namespace="cn.ccs.dao.officeDao">
+<mapper namespace="cn.ccs.dao.OfficeDao">
     <insert id="addOffice">
         insert into office(officeid, officeMd5) values(#{officeId}, #{officeMd5})
     </insert>

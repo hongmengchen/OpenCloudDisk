@@ -3,7 +3,7 @@
         PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- 文件持久层 -->
-<mapper namespace="cn.ccs.dao.fileDao">
+<mapper namespace="cn.ccs.dao.FileDao">
     <insert id="insertFiles">
         insert into File(filePath,userName) values(#{filePath},#{userName})
     </insert>
