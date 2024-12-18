@@ -359,7 +359,14 @@ public class FileServiceImpl implements FileService {
         downloadFile = new File(packageZipName);
         return downloadFile;
     }
-    // 压缩文件
+
+    /**
+     * 压缩文件
+     *
+     * @param sourcePath 原始文件路径数组，用于确定需要压缩的文件
+     * @return 返回压缩后的文件名
+     * @throws Exception 可能抛出的异常，比如文件找不到等
+     */
     private String packageZip(String[] sourcePath) throws Exception {
         String zipName = sourcePath[0] + (sourcePath.length == 1 ? "" : "等" + sourcePath.length + "个文件") + ".zip";
         ZipOutputStream zos = null;
@@ -375,7 +382,15 @@ public class FileServiceImpl implements FileService {
         }
         return zipName;
     }
-    // 递归压缩文件
+
+    /**
+     * 递归压缩文件
+     *
+     * @param file     当前需要压缩的文件或目录
+     * @param basePath 基础路径，用于构建压缩包内的相对路径
+     * @param zos      ZipOutputStream对象，用于写入压缩包
+     * @throws IOException 文件读写过程中可能抛出的异常
+     */
     private void writeZos(File file, String basePath, ZipOutputStream zos) throws IOException {
         if (!file.exists()) {
             throw new FileNotFoundException();
