@@ -24,6 +24,7 @@ public class FileServiceImpl implements FileService {
     private UserDao userDao;
 
     @Override
+    // 添加新用户
     public void addNewNameSpace(HttpServletRequest request, String namespace) {
         String fileName = getRootPath(request);
         File file = new File(fileName, namespace);
@@ -33,7 +34,8 @@ public class FileServiceImpl implements FileService {
             newFile.mkdir();
         }
     }
-
+    @Override
+    // 获取当前用户名
     public String getFileName(HttpServletRequest request, String fileName) {
         // fileName= fileName.replace("\\", "//");
         if (fileName == null || fileName.equals("\\")) {
@@ -45,7 +47,8 @@ public class FileServiceImpl implements FileService {
         return realpath;
 
     }
-
+    @Override
+    // 获取当前用户名
     public String getFileName(HttpServletRequest request, String fileName, String username) {
         if (username == null) {
             return getFileName(request, fileName);
@@ -62,7 +65,7 @@ public class FileServiceImpl implements FileService {
         String rootPath = request.getSession().getServletContext().getRealPath("/") + PREFIX;
         return rootPath;
     }
-
+    @Override
     //获取路径下所有的文件信息
     public List<FileCustom> listFile(String realPath) {
         File[] files = new File(realPath).listFiles();
@@ -86,6 +89,13 @@ public class FileServiceImpl implements FileService {
         }
         return lists;
 
+    }
+
+    @Override
+    // 添加文件夹
+    public boolean addDirectory(HttpServletRequest request, String currentPath, String directoryName) {
+        File file = new File(getFileName(request, currentPath), directoryName);
+        return file.mkdir();
     }
 }
 
