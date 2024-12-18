@@ -200,4 +200,15 @@ public class FileController {
             return new Result<>(361, true, "复制失败");
         }
     }
+
+     // 重命名
+    @RequestMapping("/renameDirectory")
+    public @ResponseBody Result<String> renameDirectory(String currentPath,    String srcName, String destName) {
+        try {
+            fileService.renameDirectory(request, currentPath, srcName, destName);
+            return new Result<>(356, true, "重命名成功");
+        } catch (Exception e) {
+            return new Result<>(351, false, "重命名失败");
+        }
+    }
 }

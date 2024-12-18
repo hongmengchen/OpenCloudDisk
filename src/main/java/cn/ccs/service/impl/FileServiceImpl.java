@@ -653,5 +653,13 @@ public class FileServiceImpl implements FileService {
             }
         }
     }
+// 重命名
+    public boolean renameDirectory(HttpServletRequest request, String currentPath, String srcName, String destName) {
+        //根据源文件名  获取  源地址
+        File file = new File(getFileName(request, currentPath), srcName);
+        //同上
+        File descFile = new File(getFileName(request, currentPath), destName);
+        return file.renameTo(descFile);//重命名
+    }
 
 }

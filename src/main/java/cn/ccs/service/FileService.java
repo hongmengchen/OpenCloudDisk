@@ -48,5 +48,8 @@ public interface FileService {
     void copyDirectory(HttpServletRequest request,String currentPath,String[] directoryName, String targetdirectorypath) throws Exception;
     //复制文件
     void copyfile(File srcFile, File targetFile) throws IOException;
-}
+    //重命名目录
+    public boolean renameDirectory(HttpServletRequest request, String currentPath, String srcName, String destName);
+
+    }
 
