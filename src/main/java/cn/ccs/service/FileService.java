@@ -8,16 +8,21 @@ import java.io.File;
 import java.util.List;
 
 public interface FileService {
-    //添加新的命名空间
+    // 添加新的命名空间
     void addNewNameSpace(HttpServletRequest request, String namespace);
-    //获取根目录
+    // 获取根目录
     String getRootPath(HttpServletRequest request);
+    // 获取文件路径
     public String getFileName(HttpServletRequest request, String fileName) ;
+    // 获取文件路径
     public String getFileName(HttpServletRequest request, String fileName, String username) ;
+    // 获取文件列表
     public List<FileCustom> listFile(String realPath) ;
-    //新建文件夹
+    // 新建文件夹
     boolean addDirectory(HttpServletRequest request, String currentPath, String directoryName);
+    // 上传文件
     public void uploadFilePath(HttpServletRequest request, MultipartFile[] files, String currentPath) throws Exception;
+    // 删除文件夹
     public void delDirectory(HttpServletRequest request, String currentPath, String[] directoryName) throws Exception;
     // 下载文件打包
     public File downPackage(HttpServletRequest request, String currentPath, String[] fileNames, String username) throws Exception;
