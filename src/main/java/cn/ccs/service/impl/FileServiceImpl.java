@@ -1,6 +1,7 @@
 package cn.ccs.service.impl;
 
 import cn.ccs.dao.UserDao;
+import cn.ccs.dao.officeDao;
 import cn.ccs.pojo.FileCustom;
 import cn.ccs.pojo.User;
 import cn.ccs.service.FileService;
@@ -8,9 +9,18 @@ import cn.ccs.utils.FileUtils;
 import cn.ccs.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service("FileService")
@@ -86,6 +96,67 @@ public class FileServiceImpl implements FileService {
         }
         return lists;
 
+    }
+
+    public void uploadFilePath(HttpServletRequest request, MultipartFile[] files, String currentPath) throws Exception {
+        for (MultipartFile file : files) {
+            String fileName = file.getOriginalFilename();
+            String filePath = getFileName(request, currentPath);
+            File distFile = new File(filePath, fileName);
+            if (!distFile.exists()) {
+                file.transferTo(distFile);
+                if ("office".equals(FileUtils.getFileType(distFile))) {
+                    try {
+                        String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
+                        String documentId = FileUtils.getDocClient().createDocument(distFile, fileName, suffix).getDocumentId();
+                        officeDao.addOffice(documentId, FileUtils.MD5(distFile));
+                    } catch (Exception e) {
+                    }
+                }
+            }
+        }
+        reSize(request);
+    }
+    public void reSize(HttpServletRequest request) {
+        String rootPath = getRootPath(request);
+        File rootDir = new File(rootPath);
+        if (rootDir.exists() && rootDir.isDirectory()) {
+            List<File> imageFiles = new ArrayList<>();
+            File[] files = rootDir.listFiles();
+            if (files!= null) {
+                for (File file : files) {
+                    if (file.isFile() && isImageFile(file)) {
+                        imageFiles.add(file);
+                    }
+                }
+            }
+            for (File imageFile : imageFiles) {
+                try {
+                    BufferedImage originalImage = ImageIO.read(imageFile);
+                    int newWidth = (int) (originalImage.getWidth() * 0.5);
+                    int newHeight = (int) (originalImage.getHeight() * 0.5);
+                    BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+                    resizedImage.createGraphics().drawImage(originalImage, 0, 0, newWidth, newHeight, null);
+                    ImageIO.write(resizedImage, getFileExtension(imageFile.getName()), imageFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private boolean isImageFile(File file) {
+        String fileName = file.getName();
+        String fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+        return fileExtension.equals("jpg") || fileExtension.equals("jpeg") || fileExtension.equals("png") || fileExtension.equals("gif");
+    }
+
+    private String getFileExtension(String fileName) {
+        int index = fileName.lastIndexOf('.');
+        if (index > 0) {
+            return fileName.substring(index + 1);
+        }
+        return "";
     }
 }
 

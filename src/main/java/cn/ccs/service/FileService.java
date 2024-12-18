@@ -1,6 +1,7 @@
 package cn.ccs.service;
 
 import cn.ccs.pojo.FileCustom;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -13,6 +14,8 @@ public interface FileService {
     public String getFileName(HttpServletRequest request, String fileName) ;
     public String getFileName(HttpServletRequest request, String fileName, String username) ;
     public List<FileCustom> listFile(String realPath) ;
+    public void uploadFilePath(HttpServletRequest request, MultipartFile[] files, String currentPath) throws Exception;
+
 
 
 
