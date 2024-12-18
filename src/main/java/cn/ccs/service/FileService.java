@@ -3,6 +3,7 @@ package cn.ccs.service;
 import cn.ccs.pojo.FileCustom;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.util.List;
 
 /**
@@ -21,6 +22,13 @@ public interface FileService {
     public String getFileName(HttpServletRequest request, String fileName, String username);
 
     public List<FileCustom> listFile(String realPath);
+
+    // 下载文件打包
+    public File downPackage(HttpServletRequest request, String currentPath, String[] fileNames, String username) throws Exception;
+
+    // 删除压缩文件包
+    public void deleteDownPackage(File downloadFile);
+
 
 }
 
