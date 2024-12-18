@@ -6,6 +6,7 @@ import cn.ccs.pojo.SummaryFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -92,5 +93,8 @@ public interface FileService {
 
     // 清空回收站文件
     void delAllRecycle(HttpServletRequest request) throws Exception;
+
+    // 响应文件流
+    void respFile(HttpServletResponse response, HttpServletRequest request, String currentPath, String fileName, String type) throws IOException;
 }
 
