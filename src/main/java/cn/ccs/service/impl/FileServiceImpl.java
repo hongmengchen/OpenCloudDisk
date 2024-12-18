@@ -31,15 +31,14 @@ public class FileServiceImpl implements FileService {
     public static final String PREFIX = "WEB-INF" + File.separator + "file" + File.separator;
     // 新用户注册默认文件夹数组，定义了新用户创建时默认会生成的文件夹名称列表，包含如视频、音乐等不同类型的文件夹以及回收站文件夹
     public static final String[] DEFAULT_DIRECTORY = {"vido", "music", "source", "image", User.RECYCLE};
+    @Autowired
+    private UserDao userDao;
 
     // 通过构造函数注入UserDao，用于后续与用户相关的数据操作（如查询用户信息、更新用户空间大小等）
     @Autowired
     public FileServiceImpl(UserDao userDao) {
         this.userDao = userDao;
     }
-
-    @Autowired
-    private UserDao userDao;
 
     /**
      * 为用户添加新的命名空间（文件夹）的方法
@@ -469,17 +468,22 @@ public class FileServiceImpl implements FileService {
     }
 
     /**
-     * 根据条件搜索文件
+     * 根据给定的条件搜索文件
+     * 此方法用于根据用户请求、当前路径、正则表达式和正则表达式类型来搜索匹配的文件
+     * 它通过递归检查文件和目录来编译符合给定条件的文件列表
      *
-     * @param request     HTTP请求对象，用于获取用户信息和根路径
-     * @param currentPath 当前路径，用于确定搜索的起始目录
-     * @param reg         文件名的正则表达式，用于匹配文件名
-     * @param regType     文件类型，用于过滤特定类型的文件
-     * @return 返回一个包含匹配文件信息的列表
+     * @param request     用户的HTTP请求，包含搜索文件的上下文信息
+     * @param currentPath 当前浏览的目录路径，用于确定搜索的起始位置
+     * @param reg         正则表达式字符串，用于匹配文件名
+     * @param regType     正则表达式类型，可选参数，用于指定正则表达式的类型或用途
+     * @return 返回一个FileCustom对象的列表，每个对象代表一个匹配的文件
      */
     public List<FileCustom> searchFile(HttpServletRequest request, String currentPath, String reg, String regType) {
+        // 初始化一个空的文件列表，用于存储搜索到的匹配文件
         List<FileCustom> list = new ArrayList<>();
-        matchFile(request, list, new File(getSearchFileName(request, currentPath)), reg, regType == null ? "" : regType);
+        // 调用递归方法matchFile来搜索文件并填充列表
+        matchFile(request, list, new File(getFileName(request, currentPath)), reg, regType == null ? "" : regType);
+        // 返回匹配文件的列表
         return list;
     }
 
@@ -501,38 +505,47 @@ public class FileServiceImpl implements FileService {
     }
 
     /**
-     * 递归匹配指定目录下的文件
+     * 根据给定的条件匹配文件
+     * 此方法递归地遍历指定目录下的所有文件和子目录，根据文件类型或名称中的关键字筛选文件，并将匹配的文件信息收集到一个列表中
      *
-     * @param request HTTP请求对象，用于获取用户信息
-     * @param list    用于存储匹配文件的信息的列表
+     * @param request HTTP请求对象，用于获取Servlet上下文路径
+     * @param list    存储匹配的文件信息的列表
      * @param dirFile 当前遍历的目录文件对象
-     * @param reg     文件名的正则表达式，用于匹配文件名
-     * @param regType 文件类型，用于过滤特定类型的文件
+     * @param reg     文件名中包含的关键字
+     * @param regType 文件类型，如"txt"、"jpg"等
      */
-    public void matchFile(HttpServletRequest request, List<FileCustom> list, File dirFile, String reg,
-                          String regType) {
+    private void matchFile(HttpServletRequest request, List<FileCustom> list, File dirFile, String reg, String regType) {
+        // 获取当前目录下的所有文件和子目录
         File[] listFiles = dirFile.listFiles();
+        // 如果当前目录不为空，则遍历每个文件或子目录
         if (listFiles != null) {
             for (File file : listFiles) {
+                // 如果是文件，则进一步检查是否匹配给定的条件
                 if (file.isFile()) {
+                    // 获取文件的类型
                     String suffixType = FileUtils.getFileType(file);
+                    // 如果文件类型或名称匹配给定的条件，则创建FileCustom对象并添加到列表中
                     if (suffixType.equals(regType) || (reg != null && file.getName().contains(reg))) {
                         FileCustom custom = new FileCustom();
                         custom.setFileName(file.getName());
                         custom.setLastTime(FileUtils.formatTime(file.lastModified()));
                         String parentPath = file.getParent();
+                        // 计算文件的相对路径，以便在前端显示
                         String prePath = parentPath.substring(
-                                parentPath.indexOf(getSearchFileName(request, null)) + getSearchFileName(request, null).length());
+                                parentPath.indexOf(getFileName(request, null)) + getFileName(request, null).length());
                         custom.setCurrentPath(File.separator + prePath);
+                        // 如果是目录，则设置文件大小为"-"
                         if (file.isDirectory()) {
                             custom.setFileSize("-");
                         } else {
+                            // 否则，设置文件的实际大小
                             custom.setFileSize(FileUtils.getDataSize(file.length()));
                         }
                         custom.setFileType(FileUtils.getFileType(file));
                         list.add(custom);
                     }
                 } else {
+                    // 如果是子目录，则递归调用此方法以继续遍历
                     matchFile(request, list, file, reg, regType);
                 }
             }
@@ -653,7 +666,8 @@ public class FileServiceImpl implements FileService {
             }
         }
     }
-// 重命名
+
+    // 重命名
     public boolean renameDirectory(HttpServletRequest request, String currentPath, String srcName, String destName) {
         //根据源文件名  获取  源地址
         File file = new File(getFileName(request, currentPath), srcName);
