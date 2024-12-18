@@ -92,4 +92,20 @@ public class UserController {
         }
     }
 
+    /**
+     * 处理用户注销请求
+     * <p>
+     * 通过移除用户session中的登录状态来实现用户注销，操作成功后重定向至登录页面
+     *
+     * @param request HttpServletRequest对象，用于获取当前用户的session
+     * @return 重定向至登录页面的路径
+     */
+    @RequestMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        // 移除用户session中的登录状态
+        request.getSession().removeAttribute(User.NAMESPACE);
+        // 重定向至登录页面的路径
+        return "login";
+    }
+
 }
