@@ -377,4 +377,74 @@ public class FileServiceImpl implements FileService {
         }
         return count;
     }
+    /**
+     * 根据条件搜索文件
+     *
+     * @param request HTTP请求对象，用于获取用户信息和根路径
+     * @param currentPath 当前路径，用于确定搜索的起始目录
+     * @param reg 文件名的正则表达式，用于匹配文件名
+     * @param regType 文件类型，用于过滤特定类型的文件
+     * @return 返回一个包含匹配文件信息的列表
+     */
+    public List<FileCustom> searchFile(HttpServletRequest request, String currentPath, String reg, String regType) {
+        List<FileCustom> list = new ArrayList<>();
+        matchFile(request, list, new File(getSearchFileName(request, currentPath)), reg, regType == null ? "" : regType);
+        return list;
+    }
+
+    /**
+     * 构造文件的完整搜索路径
+     *
+     * @param request HTTP请求对象，用于获取用户信息
+     * @param fileName 传入的文件名或路径，用于拼接完整路径
+     * @return 返回构造的文件完整路径
+     */
+    public String getSearchFileName(HttpServletRequest request, String fileName) {
+        if (fileName == null||fileName.equals("\\")) {
+            System.out.println(1);
+            fileName = "";
+        }
+        String username = UserUtils.getUsername(request);
+        String realpath=getRootPath(request) + username + File.separator + fileName;
+        return realpath;
+    }
+    /**
+     * 递归匹配指定目录下的文件
+     *
+     * @param request HTTP请求对象，用于获取用户信息
+     * @param list 用于存储匹配文件的信息的列表
+     * @param dirFile 当前遍历的目录文件对象
+     * @param reg 文件名的正则表达式，用于匹配文件名
+     * @param regType 文件类型，用于过滤特定类型的文件
+     */
+    public void matchFile(HttpServletRequest request, List<FileCustom> list, File dirFile, String reg,
+                           String regType) {
+        File[] listFiles = dirFile.listFiles();
+        if (listFiles != null) {
+            for (File file : listFiles) {
+                if (file.isFile()) {
+                    String suffixType = FileUtils.getFileType(file);
+                    if (suffixType.equals(regType) || (reg != null && file.getName().contains(reg))) {
+                        FileCustom custom = new FileCustom();
+                        custom.setFileName(file.getName());
+                        custom.setLastTime(FileUtils.formatTime(file.lastModified()));
+                        String parentPath = file.getParent();
+                        String prePath = parentPath.substring(
+                                parentPath.indexOf(getSearchFileName(request, null)) + getSearchFileName(request, null).length());
+                        custom.setCurrentPath(File.separator + prePath);
+                        if (file.isDirectory()) {
+                            custom.setFileSize("-");
+                        } else {
+                            custom.setFileSize(FileUtils.getDataSize(file.length()));
+                        }
+                        custom.setFileType(FileUtils.getFileType(file));
+                        list.add(custom);
+                    }
+                } else {
+                    matchFile(request, list, file, reg, regType);
+                }
+            }
+        }
+    }
 }
+
