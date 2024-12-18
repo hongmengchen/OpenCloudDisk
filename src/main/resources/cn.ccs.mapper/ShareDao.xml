@@ -4,7 +4,16 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- 分享持久层 -->
 <mapper namespace="cn.ccs.dao.ShareDao">
-
-
-
+    <insert id="shareFile" parameterType="cn.ccs.pojo.Share" >
+        insert into share(shareUrl, path, shareUser) values(#{shareUrl},#{path},#{shareUser})
+    </insert>
+    <select id="findShareByName" resultType="cn.ccs.pojo.Share">
+        select * from share where shareUser = #{username, jdbcType=VARCHAR} and status = #{status, jdbcType=TINYINT}
+    </select>
+    <update id="cancelShare">
+        update share set status = #{status} where shareUrl = #{url} and path=#{filePath}
+    </update>
+    <select id="findShare" parameterType="cn.ccs.pojo.Share" resultType="cn.ccs.pojo.Share">
+        select * from share where shareUrl = #{shareUrl} and status = #{status}
+    </select>
 </mapper>
