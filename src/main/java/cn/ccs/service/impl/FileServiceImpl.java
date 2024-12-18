@@ -723,7 +723,10 @@ public class FileServiceImpl implements FileService {
             File testFile = new File(getRecyclePath(request), selectFile.getFilePath());
             String testFileName = testFile.getName();
             String relativePath = "\\" + testFileName;
+            System.out.println("----从回收站删除----");
             System.out.println(relativePath);
+            System.out.println("------------------");
+            // 获取文件名
             File srcFile = new File(getRecyclePath(request), relativePath);
             // 逐一删除数据库所存数据以及该文件
             fileDao.deleteFile(fileId[i], UserUtils.getUsername(request));
