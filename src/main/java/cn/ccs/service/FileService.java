@@ -50,6 +50,9 @@ public interface FileService {
     void copyfile(File srcFile, File targetFile) throws IOException;
     //重命名目录
     public boolean renameDirectory(HttpServletRequest request, String currentPath, String srcName, String destName);
-
-    }
+    //移动目录
+    void moveDirectory(HttpServletRequest request, String currentPath, String[] directoryName,String targetdirectorypath) throws Exception;
+    //删除文件
+    void delFile(File srcFile) throws Exception;
+}
 
