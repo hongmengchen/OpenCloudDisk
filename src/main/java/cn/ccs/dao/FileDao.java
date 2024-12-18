@@ -5,8 +5,5 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface FileDao {
-    static void insertFiles(@Param("filePath") String filePath, @Param("userName") String userName) throws Exception {
-
-    }
-
+    void insertFiles(@Param("filePath") String filePath, @Param("userName") String userName) throws Exception ;
 }
