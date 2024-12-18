@@ -1,6 +1,7 @@
 package cn.ccs.controller;
 
 import cn.ccs.pojo.FileCustom;
+import cn.ccs.pojo.RecycleFile;
 import cn.ccs.pojo.Result;
 import cn.ccs.pojo.SummaryFile;
 import cn.ccs.service.FileService;
@@ -218,6 +219,7 @@ public class FileController {
             return new Result<>(351, false, "重命名失败");
         }
     }
+
     /**
      * 移动目录控制器
      *
@@ -238,4 +240,18 @@ public class FileController {
             return new Result<>(361, true, "移动失败");
         }
     }
+
+    /*@RequestMapping("/recycleFile")
+	public String recycleFile() {
+	    try {
+	        List<RecycleFile> findDelFile = fileService.recycleFiles(request);
+	        if(null != findDelFile && findDelFile.size() != 0) {
+	            request.setAttribute("findDelFile", findDelFile);
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return "recycle";
+	}*/
+
 }
