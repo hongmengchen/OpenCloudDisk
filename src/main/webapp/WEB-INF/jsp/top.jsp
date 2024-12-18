@@ -7,7 +7,7 @@
 			<span style="float: left;">
 <%-- 			<img src="${pageContext.request.contextPath }/img/logo@2x.png"height="50px" /> --%>
 			</span> <a class="navbar-brand" href="index.action"
-				style="margin-left: 100px;">共享云盘</a> <a
+				style="margin-left: 100px;">OpenCloudDisk</a> <a
 				class="navbar-brand" href="#">分享</a> <a
 				class="navbar-brand" href="#" target="main">更多</a>
 		</div>
