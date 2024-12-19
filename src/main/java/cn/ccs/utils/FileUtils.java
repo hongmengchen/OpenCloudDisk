@@ -7,12 +7,10 @@ import org.springframework.util.DigestUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * 文件工具类
@@ -147,22 +145,30 @@ public class FileUtils {
      *
      * @return DocClient实例
      */
-    public static DocClient getDocClient() {
+    public static synchronized DocClient getDocClient() {
         if (docClient == null) {
-            // 从百度获取的认证密钥
-            String ACCESS_KEY_ID = "87076e5056e94a9185cb849d09398abe";//在这里从百度https://console.bce.baidu.com/iam/#/iam/accesslist获取两个key
-            String SECRET_ACCESS_KEY = "c3dc7b6481aa4e7eaf6b8b26c9caa19c";
+            try (InputStream input = FileUtils.class.getClassLoader().getResourceAsStream("baidu.properties")) {
+                Properties props = new Properties();
+                if (input != null) {
+                    props.load(input);
+                }
 
-            // 初始化一个DocClient
-            String ENDPOINT = "http://doc.bj.baidubce.com";
-            // 创建BceClientConfiguration实例
-            BceClientConfiguration config = new BceClientConfiguration();
-            // 配置认证秘钥和服务器信息
-            config.setCredentials(new DefaultBceCredentials(ACCESS_KEY_ID, SECRET_ACCESS_KEY));
-            config.setEndpoint(ENDPOINT);
+                // 从配置文件中读取密钥和端点
+                String ACCESS_KEY_ID = props.getProperty("baidu.access_key_id");
+                String SECRET_ACCESS_KEY = props.getProperty("baidu.secret_access_key");
+                String ENDPOINT = props.getProperty("baidu.endpoint");
 
-            // 创建DOC客户端
-            docClient = new DocClient(config);
+                // 初始化 BceClientConfiguration
+                BceClientConfiguration config = new BceClientConfiguration();
+                config.setCredentials(new DefaultBceCredentials(ACCESS_KEY_ID, SECRET_ACCESS_KEY));
+                config.setEndpoint(ENDPOINT);
+
+                // 创建 DocClient
+                docClient = new DocClient(config);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("加载配置文件失败或初始化 DocClient 失败", e);
+            }
         }
         return docClient;
     }
