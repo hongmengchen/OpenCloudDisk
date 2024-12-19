@@ -21,14 +21,11 @@ import java.io.*;
 import java.io.File;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import static jdk.nashorn.internal.objects.NativeError.getFileName;
 
 /**
  * 文件操作相关业务逻辑实现类
@@ -202,9 +199,23 @@ public class FileServiceImpl implements FileService {
                 if ("office".equals(FileUtils.getFileType(distFile))) {
                     try {
                         String suffix = fileName.substring(fileName.lastIndexOf(".") + 1);
-                        String documentId = FileUtils.getDocClient().createDocument(distFile, fileName, suffix).getDocumentId();
+                        String documentId = null;
+                        try {
+                            documentId = FileUtils.getDocClient().createDocument(distFile, fileName, suffix).getDocumentId();
+                        } catch (com.baidubce.BceServiceException e) {
+                            if ("DocExceptions.UserNotOpened".equals(e.getErrorCode())) {
+                                // 处理未开启 DOC 服务的情况
+                                System.out.println("未开启 DOC 服务");
+                                throw new RuntimeException("请先在控制台开启 DOC 服务", e);
+                            } else {
+                                throw e;
+                            }
+                        }
                         officeDao.addOffice(documentId, FileUtils.MD5(distFile));
+
                     } catch (Exception e) {
+                        // 记录异常信息
+                        e.printStackTrace();
                     }
                 }
             }
